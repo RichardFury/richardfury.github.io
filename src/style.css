@@ -1,0 +1,49 @@
+:root {
+  --bg-color-light: #ffffff;
+  --bg-color-dark: #000000;
+  --preloader-bg-light: #f5f5dc;
+  --preloader-bg-dark: #333333;
+  --text-color-light: #000000;
+  --text-color-dark: #ffffff;
+  --theme-toggle-bg: #f0f0f0;
+  --slider-bg: #ffffff;
+  --label-color: #666666;
+  --text-color: var(--text-color-light);
+  --nav-text-color: var(--text-color-light);
+}
+
+[data-theme='light'] {
+  background-color: var(--bg-color-light);
+  --text-color: var(--text-color-light);
+  --nav-text-color: var(--text-color-light);
+  -svg-stroke-color: #444444;
+}
+
+[data-theme='dark'] {
+  background-color: var(--bg-color-dark);
+  --text-color: var(--text-color-dark);
+  --nav-text-color: var(--text-color-dark);
+  -svg-stroke-color: #ffffff;
+}
+
+body {
+  background-color: var(--bg-color-light);
+  transition: background-color 0.3s ease;
+}
+
+[data-theme='light'] {
+  background-color: var(--bg-color-light);
+  --text-color: var(--text-color-light);
+  transition: all 0.3s ease;
+}
+
+[data-theme='dark'] {
+  background-color: var(--bg-color-dark);
+  --text-color: var(--text-color-dark);
+  transition: all 0.3s ease;
+}
+
+[data-theme='dark'] body {
+  background-color: var(--bg-color-dark);
+}
+
