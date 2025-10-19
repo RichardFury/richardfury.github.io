@@ -25,29 +25,41 @@ import TheFooter from './components/TheFooter.vue';
 </script>
 
 <template>
-  <div class="app-body">
-    <ThePreloader />
-    <TheHeader />
-    <ThemeToggle @theme-change="applyTheme" />
-    <router-view></router-view>
+  <div class="app-container">
+    <div class="app-body">
+      <ThePreloader />
+      <TheHeader />
+      <ThemeToggle @theme-change="applyTheme" />
+      <router-view></router-view>
+    </div>
     <TheFooter />
   </div>
 </template>
 
 <style scoped>
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  width: 100%;
+  position: relative;
+}
+
 .app-body {
   color: var(--text-color);
+  flex: 1;
+  width: 100%;
+  position: relative;
 }
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+
+/* 确保在内容不足时，body占据足够空间 */
+.app-body {
+  min-height: calc(100vh - 80px); /* 80px是估计的footer高度，可根据实际调整 */
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+
+/* 确保TheFooter在文档流中正确显示 */
+/* 页面切换动画 */
+.router-view {
+  transition: all 0.3s ease;
 }
 </style>

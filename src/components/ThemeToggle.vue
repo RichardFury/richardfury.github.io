@@ -49,7 +49,7 @@ export default {
 
 <style scoped>
 .theme-toggle {
-  position: fixed;
+  position: absolute;
   display: inline-block;
   width: 60px;
   height: 24px;

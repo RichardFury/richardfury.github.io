@@ -14,6 +14,7 @@
 
 [data-theme='light'] {
   background-color: var(--bg-color-light);
+  --bg-color: var(--bg-color-light);
   --text-color: var(--text-color-light);
   --nav-text-color: var(--text-color-light);
   -svg-stroke-color: #444444;
@@ -21,6 +22,7 @@
 
 [data-theme='dark'] {
   background-color: var(--bg-color-dark);
+  --bg-color: var(--bg-color-dark);
   --text-color: var(--text-color-dark);
   --nav-text-color: var(--text-color-dark);
   -svg-stroke-color: #ffffff;
@@ -33,12 +35,14 @@ body {
 
 [data-theme='light'] {
   background-color: var(--bg-color-light);
+  --bg-color: var(--bg-color-light);
   --text-color: var(--text-color-light);
   transition: all 0.3s ease;
 }
 
 [data-theme='dark'] {
   background-color: var(--bg-color-dark);
+  --bg-color: var(--bg-color-dark);
   --text-color: var(--text-color-dark);
   transition: all 0.3s ease;
 }

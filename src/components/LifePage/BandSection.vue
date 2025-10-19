@@ -71,7 +71,6 @@ onUnmounted(() => {
 .section-grid {
   position: relative;
   margin: 0 auto;
-  min-height: 100vh;
 }
 
 .band-card {

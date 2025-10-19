@@ -17,10 +17,11 @@
 
 <style scoped>
 .footer-container {
-  background-color: var(--footer-bg);
-  color: var(--footer-text);
+  background-color: var(--bg-color);
+  color: var(--text-color);
   padding: 20px 0;
-  margin-top: auto;
+  width: 100%;
+  flex-shrink: 0; /* 确保footer不会被压缩 */
 }
 
 .footer-content {
@@ -42,9 +43,9 @@
 }
 
 .social-link {
-  color: inherit;
+  color: var(--text-color);
   text-decoration: none;
-  transition: opacity 0.3s;
+  transition: all 0.3s;
 }
 
 .social-link:hover {

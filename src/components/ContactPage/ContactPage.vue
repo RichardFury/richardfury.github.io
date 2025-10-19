@@ -16,10 +16,6 @@
       </div>
       <button type="submit">Send Message</button>
     </form>
-    <div class="contact-info">
-      <p>Email: 1397320399hr@gmail.com</p>
-      <p>Phone: +852 5935-8275</p>
-    </div>
   </div>
 </template>
 
@@ -67,16 +63,12 @@ input, textarea {
 
 button {
   background-color: var(--text-color);
-  color: var(--bg-color-light);
+  color: var(--bg-color);
   padding: 10px 20px;
   border: none;
   border-radius: 4px;
   cursor: pointer;
+  transition: all 0.3s ease;
 }
 
-.contact-info {
-  margin-top: 30px;
-  padding-top: 20px;
-  border-top: 1px solid #eee;
-}
 </style>

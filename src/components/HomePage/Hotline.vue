@@ -45,6 +45,40 @@ onUnmounted(() => {
   overflow: hidden;
 }
 
+.hotline {
+  /* 添加渐变遮罩容器 */
+  position: relative;
+}
+
+.hotline::before,
+.hotline::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.hotline::before {
+  top: 0;
+  background: linear-gradient(to bottom, var(--bg-color-light), transparent);
+}
+
+.hotline::after {
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg-color-light), transparent);
+}
+
+[data-theme='dark'] .hotline::before {
+  background: linear-gradient(to bottom, var(--bg-color-dark), transparent);
+}
+
+[data-theme='dark'] .hotline::after {
+  background: linear-gradient(to top, var(--bg-color-dark), transparent);
+}
+
 .hotline img {
   position: absolute;
   top: 0;
@@ -52,7 +86,7 @@ onUnmounted(() => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  mask-image: linear-gradient(to right, transparent 0%, black 100%);
+  mask-image: linear-gradient(to right, transparent -10%, black 100%);
   backdrop-filter: blur(8px);
 }
 

@@ -16,11 +16,10 @@ import BandSection from './BandSection.vue';
 .life-page-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh;
   gap: 2rem;
   width: 100%;
   max-width: 80vw;
-  margin: 0 0;
+  margin: 0 auto 2rem;
   padding: 0 10%;
 }
 </style>
