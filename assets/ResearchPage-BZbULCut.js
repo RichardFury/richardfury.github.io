@@ -1,0 +1,1 @@
+import{_ as e,d as a,b as c}from"./index-Bzm2Dpwr.js";const s={class:"research-content"},t={__name:"ResearchPage",setup(o){return(_,r)=>(c(),a("div",s," To be updated... "))}},d=e(t,[["__scopeId","data-v-712d3c87"]]);export{d as default};
