@@ -1,35 +1,35 @@
 <script setup>
-import { ref } from 'vue';
-const currentPage = ref('home');
-const theme = ref(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-applyTheme(theme.value);
+import { onMounted, ref } from 'vue';
+import TheHeader from './components/TheHeader.vue';
+import ThemeToggle from './components/ThemeToggle.vue';
+import ThePreloader from './components/ThePreloader.vue';
+import TheFooter from './components/TheFooter.vue';
+
+const theme = ref('light');
 
 function applyTheme(newTheme) {
   document.documentElement.setAttribute('data-theme', newTheme);
   theme.value = newTheme;
 }
 
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-  const newTheme = e.matches ? 'dark' : 'light';
-  applyTheme(newTheme);
+onMounted(() => {
+  // 初始化主题
+  const systemTheme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  applyTheme(systemTheme);
+  
+  // 监听系统主题变化
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    applyTheme(e.matches ? 'dark' : 'light');
+  });
 });
-
-import TheHeader from './components/TheHeader.vue';
-import ThemeToggle from './components/ThemeToggle.vue';
-import ThePreloader from './components/ThePreloader.vue';
-import HomePage from './components/HomePage/HomePage.vue';
-import GalleryPage from './components/GalleryPage/GalleryPage.vue';
-import ResearchPage from './components/ResearchPage/ResearchPage.vue';
-import LifePage from './components/LifePage/LifePage.vue';
-import TheFooter from './components/TheFooter.vue';
 </script>
 
 <template>
   <div class="app-container">
     <div class="app-body">
       <ThePreloader />
-      <TheHeader />
       <ThemeToggle @theme-change="applyTheme" />
+      <TheHeader />
       <router-view></router-view>
     </div>
     <TheFooter />

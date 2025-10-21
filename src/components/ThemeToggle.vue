@@ -6,45 +6,33 @@
   </div>
 </template>
 
-<script>
-import { ref, computed, provide } from 'vue';
+<script setup>
+import { ref, onMounted } from 'vue';
 
-export default {
-  name: 'ThemeToggle',
-  setup(_, { emit }) {
-    const theme = ref(getSystemTheme());
-    
-    const backgroundImage = computed(() => {
-      return theme.value === 'dark'
-        ? 'url(/assets/fig/photo-dark.JPG)'
-        : 'url(/assets/fig/photo-light.JPG)';
-    });
+const emit = defineEmits(['theme-change']);
+const theme = ref('light');
 
-    provide('themeData', { theme, backgroundImage });
-
-    function getSystemTheme() {
-      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
-    const toggleTheme = () => {
-      theme.value = theme.value === 'dark' ? 'light' : 'dark';
-      document.documentElement.setAttribute('data-theme', theme.value);
-      emit('theme-change', theme.value);
-    };
-
-    return {
-      theme,
-      toggleTheme
-    };
-  },
-  mounted() {
-    this.$emit('theme-change', this.theme);
-    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-      this.theme = e.matches ? 'dark' : 'light';
-      this.$emit('theme-change', this.theme);
-    });
-  }
+function getSystemTheme() {
+  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 }
+
+const toggleTheme = () => {
+  theme.value = theme.value === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', theme.value);
+  emit('theme-change', theme.value);
+};
+
+onMounted(() => {
+  // 初始化主题
+  theme.value = getSystemTheme();
+  emit('theme-change', theme.value);
+  
+  // 监听系统主题变化
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
+    theme.value = e.matches ? 'dark' : 'light';
+    emit('theme-change', theme.value);
+  });
+});
 </script>
 
 <style scoped>

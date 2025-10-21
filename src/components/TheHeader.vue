@@ -16,41 +16,56 @@
   </header>
 </template>
 <script setup>
-import { onMounted, ref } from 'vue';
+import { onMounted } from 'vue';
 
-const theme = ref(getSystemTheme());
-
-function getSystemTheme() {
-  return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-}
-
-function applyTheme() {
-  document.documentElement.setAttribute('data-theme', theme.value);
-}
-
+// 主题管理已由App.vue统一处理，此处不再重复实现
 onMounted(() => {
-  applyTheme();
-  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', e => {
-    theme.value = e.matches ? 'dark' : 'light';
-    applyTheme();
-  });
+  // 确保主题已正确应用
+  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
+  document.documentElement.setAttribute('data-theme', currentTheme);
 });
 </script>
 
 <style scoped>
-.theme-toggle {
-  position: absolute;
-  display: inline-block;
-  width: 80px;
-  height: 34px;
-  top: 20px;
-  right: 20px;
-  border-radius: 34px;
-  background-color: var(--theme-toggle-bg);
-  cursor: pointer;
+.title {
+  font-family: 'Corinthia', cursive;
+  font-size: 48px;
+  margin: 0;
 }
 
-.slider {
+.title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.nav a {
+  text-decoration: none;
+  color: var(--text-color);
+  font-family: 'DM Serif Text', serif;
+  padding: 5px 10px;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+
+.nav a:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+  
+  /* 响应式设计 */
+  @media (max-width: 768px) {
+    .container {
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    .nav ul {
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1rem;
+    }
+  }
+  
+  .slider {
   position: absolute;
   cursor: pointer;
   top: 2px;
