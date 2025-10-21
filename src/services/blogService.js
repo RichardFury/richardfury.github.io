@@ -18,9 +18,21 @@ function parseMarkdown(content) {
       // 处理数组类型的标签
       if (value.startsWith('[') && value.endsWith(']')) {
         try {
+          // 尝试直接JSON解析
           frontMatterObj[key] = JSON.parse(value);
         } catch {
-          frontMatterObj[key] = value;
+          // 如果JSON解析失败，尝试手动解析没有引号的标签数组
+          if (key === 'tags') {
+            // 移除[]并分割标签
+            const tagsContent = value.slice(1, -1).trim();
+            if (tagsContent) {
+              frontMatterObj[key] = tagsContent.split(',').map(tag => tag.trim());
+            } else {
+              frontMatterObj[key] = [];
+            }
+          } else {
+            frontMatterObj[key] = value;
+          }
         }
       } else {
         // 移除字符串两端的引号

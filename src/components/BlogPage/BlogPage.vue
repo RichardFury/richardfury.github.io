@@ -121,7 +121,7 @@ const handleAddComment = async (comment) => {
 <style scoped>
 .thought-container {
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 0 50px; /* 左右添加50px的margin */
   padding: 40px;
 }
 
@@ -175,24 +175,31 @@ const handleAddComment = async (comment) => {
 
 /* 博客详情页面样式 */
 .post-detail {
-  max-width: 800px;
+  width: 90%;
   margin: 0 auto;
 }
 
 .back-button {
-  background: var(--primary-color);
-  color: white;
   border: none;
   padding: 10px 20px;
   border-radius: 6px;
   font-size: 1em;
   cursor: pointer;
   margin-bottom: 30px;
-  transition: background 0.3s ease;
+  transition: none;
 }
 
-.back-button:hover {
-  background: var(--primary-color-dark);
+/* 浅色主题下使用略深的背景色 */
+[data-theme='light'] .back-button {
+  background: var(--hover-bg-color-light);
+  color: var(--text-color);
+}
+
+/* 深色主题下使用略浅的背景色 */
+[data-theme='dark'] .back-button {
+  background: var(--hover-bg-color-dark);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 响应式设计 */

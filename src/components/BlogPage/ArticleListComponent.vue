@@ -26,7 +26,7 @@ const props = defineProps({
   transform: translateY(-50%);
   width: 200px;
   background: var(--card-bg-color);
-  border-radius: 8px;
+  border-radius: 16px;
   padding: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
@@ -49,10 +49,5 @@ const props = defineProps({
   border-radius: 4px;
   cursor: pointer;
   color: var(--text-color);
-  transition: background 0.3s ease;
-}
-
-.sidebar-item:hover {
-  background: var(--hover-bg-color);
 }
 </style>

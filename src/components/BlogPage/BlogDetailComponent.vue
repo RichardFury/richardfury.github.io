@@ -139,7 +139,7 @@ const submitComment = () => {
 
 <style scoped>
 .blog-detail {
-  max-width: 800px;
+  width: 100%;
   margin: 0 auto;
 }
 
@@ -152,7 +152,7 @@ const submitComment = () => {
 }
 
 .post-content h1 {
-  font-size: 2.5em;
+  font-size: 1.8em;
   margin-bottom: 20px;
   color: var(--text-color);
 }
@@ -177,8 +177,8 @@ const submitComment = () => {
 
 .tag {
   display: inline-block;
-  background: var(--primary-color-light);
-  color: var(--primary-color);
+  background: rgba(0, 0, 0, 0.1);
+  color: #333;
   padding: 4px 12px;
   border-radius: 16px;
   font-size: 0.85em;
@@ -286,22 +286,42 @@ const submitComment = () => {
 }
 
 .submit-comment {
-  background: var(--primary-color);
-  color: white;
   border: none;
   padding: 12px 30px;
   border-radius: 6px;
   font-size: 1em;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: none;
 }
 
-.submit-comment:hover:not(:disabled) {
-  background: var(--primary-color-dark);
+/* 浅色主题下使用略深的背景色 */
+[data-theme='light'] .submit-comment:not(:disabled) {
+  background: var(--hover-bg-color-light);
+  color: var(--text-color);
+}
+
+/* 深色主题下使用略浅的背景色 */
+[data-theme='dark'] .submit-comment:not(:disabled) {
+  background: var(--hover-bg-color-dark);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* 深色主题下的标签样式 */
+[data-theme='dark'] .tag {
+  background: rgba(255, 255, 255, 0.1);
+  color: #ddd;
+}
+
+/* 深色主题下的输入框样式 */
+[data-theme='dark'] .form-group input,
+[data-theme='dark'] .form-group textarea {
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .submit-comment:disabled {
-  background: #ccc;
+  background: var(--disabled-bg-color);
+  color: var(--text-color);
   cursor: not-allowed;
 }
 

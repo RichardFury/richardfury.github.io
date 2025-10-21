@@ -1,6 +1,6 @@
 <template>
   <div class="content">
-    <h1 style="font-family: 'SimSun', serif;">Thoughts</h1>
+    <h1 style="font-family: 'SimSun', serif; font-size: 1.5em;">博客</h1>
     <div class="thought-list">
       <div v-for="post in posts" :key="post.id" class="thought-item">
         <div class="post-header">
@@ -64,6 +64,18 @@ const selectPost = (postId) => {
   padding: 20px;
   margin-bottom: 20px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 1px solid transparent;
+  transition: all 0.3s ease;
+}
+
+.thought-item:hover {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+[data-theme='dark'] .thought-item {
+  border-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .post-header {
@@ -89,7 +101,7 @@ const selectPost = (postId) => {
 }
 
 .post-title {
-  font-size: 1.8em;
+  font-size: 1.3em;
   margin-bottom: 10px;
   color: var(--text-color);
   cursor: pointer;
@@ -107,17 +119,24 @@ const selectPost = (postId) => {
 }
 
 .read-more {
-  background: var(--primary-color);
-  color: white;
   border: none;
   padding: 8px 16px;
   border-radius: 4px;
   font-size: 0.9em;
   cursor: pointer;
-  transition: background 0.3s ease;
+  transition: none;
 }
 
-.read-more:hover {
-  background: var(--primary-color-dark);
+/* 浅色主题下使用略深的背景色 */
+[data-theme='light'] .read-more {
+  background: var(--hover-bg-color-light);
+  color: var(--text-color);
+}
+
+/* 深色主题下使用略浅的背景色 */
+[data-theme='dark'] .read-more {
+  background: var(--hover-bg-color-dark);
+  color: var(--text-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 </style>
