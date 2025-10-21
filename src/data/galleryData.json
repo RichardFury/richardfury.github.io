@@ -1,0 +1,80 @@
+[
+  {
+    "id": "1",
+    "url": "/assets/fig/photo-light.JPG",
+    "title": "山间日出",
+    "tags": ["风景", "自然"],
+    "cameraParams": {
+      "camera": "Canon EOS R5",
+      "aperture": "f/2.8",
+      "shutterSpeed": "1/125s",
+      "iso": "100",
+      "focalLength": "24mm"
+    }
+  },
+  {
+    "id": "2",
+    "url": "/assets/fig/photo-dark.JPG",
+    "title": "城市夜景",
+    "tags": ["夜景", "城市"],
+    "cameraParams": {
+      "camera": "Sony A7R IV",
+      "aperture": "f/4.0",
+      "shutterSpeed": "10s",
+      "iso": "1600",
+      "focalLength": "28mm"
+    }
+  },
+  {
+    "id": "3",
+    "url": "/assets/fig/photo-light.JPG",
+    "title": "古老建筑",
+    "tags": ["旅行", "建筑"],
+    "cameraParams": {
+      "camera": "Nikon Z7 II",
+      "aperture": "f/5.6",
+      "shutterSpeed": "1/60s",
+      "iso": "400",
+      "focalLength": "35mm"
+    }
+  },
+  {
+    "id": "4",
+    "url": "/assets/fig/photo-dark.JPG",
+    "title": "传统美食",
+    "tags": ["美食", "文化"],
+    "cameraParams": {
+      "camera": "Fujifilm X-T4",
+      "aperture": "f/2.0",
+      "shutterSpeed": "1/100s",
+      "iso": "200",
+      "focalLength": "50mm"
+    }
+  },
+  {
+    "id": "5",
+    "url": "/assets/fig/photo-light.JPG",
+    "title": "人像摄影",
+    "tags": ["人像", "生活"],
+    "cameraParams": {
+      "camera": "Canon EOS R6",
+      "aperture": "f/1.8",
+      "shutterSpeed": "1/250s",
+      "iso": "100",
+      "focalLength": "85mm"
+    }
+  },
+  {
+    "id": "6",
+    "url": "/assets/fig/photo-dark.JPG",
+    "title": "星空摄影",
+    "tags": ["夜景", "自然"],
+    "cameraParams": {
+      "camera": "Sony A7S III",
+      "aperture": "f/2.8",
+      "shutterSpeed": "20s",
+      "iso": "6400",
+      "focalLength": "14mm"
+    }
+  }
+]
