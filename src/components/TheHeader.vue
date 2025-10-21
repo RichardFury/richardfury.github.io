@@ -8,7 +8,7 @@
           <li><router-link to="/research">Research</router-link></li>
           <li><router-link to="/life">Life</router-link></li>
           <li><router-link to="/gallery">Gallery</router-link></li>
-          <li><router-link to="/thought">Thought</router-link></li>
+          <li><router-link to="/blog">Blog</router-link></li>
           <li><router-link to="/contact">Contact</router-link></li>
         </ul>
       </nav>

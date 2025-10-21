@@ -11,7 +11,7 @@ const router = createRouter({
     { path: '/research', component: () => import('./components/ResearchPage/ResearchPage.vue') },
     { path: '/life', component: () => import('./components/LifePage/LifePage.vue') },
     { path: '/contact', component: () => import('./components/ContactPage/ContactPage.vue') },
-    { path: '/thought', component: () => import('./components/ThoughtPage/ThoughtPage.vue') }
+    { path: '/blog', component: () => import('./components/BlogPage/BlogPage.vue') }
   ]
 })
 
