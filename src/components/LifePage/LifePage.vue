@@ -18,8 +18,8 @@ import BandSection from './BandSection.vue';
   flex-direction: column;
   gap: 2rem;
   width: 100%;
-  max-width: 80vw;
-  margin: 0 auto 2rem;
-  padding: 0 10%;
+  max-width: 1200px;
+  margin: 0 50px;
+  padding: 40px;
 }
 </style>

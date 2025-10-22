@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- 宇宙背景 - 使用CSS变量 -->
+  <rect width="200" height="200" fill="var(--bg-color)"/>
+  
+  <!-- 星系分布 - 使用CSS变量 -->
+  <circle cx="50" cy="50" r="20" fill="none" stroke="var(--primary-color)" stroke-width="1"/>
+  <circle cx="150" cy="70" r="15" fill="none" stroke="var(--primary-color)" stroke-width="1"/>
+  <circle cx="80" cy="140" r="25" fill="none" stroke="var(--primary-color)" stroke-width="1"/>
+  <circle cx="120" cy="120" r="18" fill="none" stroke="var(--primary-color)" stroke-width="1"/>
+  
+  <!-- 宇宙膨胀示意 - 使用CSS变量 -->
+  <line x1="100" y1="100" x2="120" y2="80" stroke="var(--text-secondary-color)" stroke-width="1" stroke-dasharray="2"/>
+  <line x1="100" y1="100" x2="80" y2="80" stroke="var(--text-secondary-color)" stroke-width="1" stroke-dasharray="2"/>
+  <line x1="100" y1="100" x2="120" y2="120" stroke="var(--text-secondary-color)" stroke-width="1" stroke-dasharray="2"/>
+  <line x1="100" y1="100" x2="80" y2="120" stroke="var(--text-secondary-color)" stroke-width="1" stroke-dasharray="2"/>
+  
+  <!-- 小恒星点缀 - 使用CSS变量 -->
+  <circle cx="30" cy="30" r="1" fill="var(--text-color)"/>
+  <circle cx="170" cy="30" r="1" fill="var(--text-color)"/>
+  <circle cx="170" cy="170" r="1" fill="var(--text-color)"/>
+  <circle cx="30" cy="170" r="1" fill="var(--text-color)"/>
+  <circle cx="100" cy="30" r="1" fill="var(--text-color)"/>
+  <circle cx="100" cy="170" r="1" fill="var(--text-color)"/>
+  <circle cx="30" cy="100" r="1" fill="var(--text-color)"/>
+  <circle cx="170" cy="100" r="1" fill="var(--text-color)"/>
+</svg>

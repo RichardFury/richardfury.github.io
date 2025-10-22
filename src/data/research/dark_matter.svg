@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="200" height="200" viewBox="0 0 200 200">
+  <!-- 背景 - 使用CSS变量 -->
+  <rect width="200" height="200" fill="var(--bg-color)"/>
+  
+  <!-- 可见星系 - 使用CSS变量 -->
+  <circle cx="100" cy="100" r="30" fill="none" stroke="var(--primary-color)" stroke-width="1"/>
+  <circle cx="100" cy="100" r="20" fill="none" stroke="var(--primary-color)" stroke-width="1"/>
+  <circle cx="100" cy="100" r="10" fill="none" stroke="var(--text-secondary-color)" stroke-width="1"/>
+  
+  <!-- 暗物质晕 - 使用CSS变量 -->
+  <circle cx="100" cy="100" r="60" fill="none" stroke="var(--primary-color)" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="100" cy="100" r="70" fill="none" stroke="var(--primary-color)" stroke-width="1" stroke-dasharray="3,2"/>
+  <circle cx="100" cy="100" r="80" fill="none" stroke="var(--primary-color)" stroke-width="1" stroke-dasharray="3,2"/>
+  
+  <!-- 引力透镜效应示意 - 使用CSS变量 -->
+  <path d="M20,80 Q100,30 180,80" fill="none" stroke="var(--text-secondary-color)" stroke-width="1" stroke-dasharray="2,1"/>
+  <path d="M20,120 Q100,170 180,120" fill="none" stroke="var(--text-secondary-color)" stroke-width="1" stroke-dasharray="2,1"/>
+  
+  <!-- 不可见物质的暗示点 - 使用CSS变量 -->
+  <circle cx="60" cy="60" r="1" fill="var(--primary-color)"/>
+  <circle cx="140" cy="60" r="1" fill="var(--primary-color)"/>
+  <circle cx="60" cy="140" r="1" fill="var(--primary-color)"/>
+  <circle cx="140" cy="140" r="1" fill="var(--primary-color)"/>
+  <circle cx="80" cy="160" r="1" fill="var(--primary-color)"/>
+  <circle cx="120" cy="160" r="1" fill="var(--primary-color)"/>
+  <circle cx="80" cy="40" r="1" fill="var(--primary-color)"/>
+  <circle cx="120" cy="40" r="1" fill="var(--primary-color)"/>
+</svg>

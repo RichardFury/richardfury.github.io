@@ -1,6 +1,6 @@
 <template>
   <div class="gallery-container">
-    <h1>Gallery</h1>
+    <h1 style="font-size: 1.8em; margin-bottom: 20px;">Gallery</h1>
     <div id="waterfall-container">
       <div v-for="image in images" :key="image.id" class="gallery-item" @click="openModal(image)">
         <div class="image-wrapper">
@@ -120,8 +120,8 @@ onUnmounted(() => {
 <style scoped>
 .gallery-container {
   max-width: 1200px;
-  margin: 0 auto;
-  padding: 20px;
+  margin: 0 50px;
+  padding: 40px;
 }
 
 #waterfall-container {

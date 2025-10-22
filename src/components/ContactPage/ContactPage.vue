@@ -1,6 +1,6 @@
 <template>
   <div class="contact-container">
-    <h1>Contact</h1>
+    <h1 style="font-size: 1.8em; margin-bottom: 20px;">Contact</h1>
     <form @submit.prevent="handleSubmit" class="contact-form">
       <div class="form-group">
         <label for="name">Name:</label>
@@ -36,9 +36,9 @@ const handleSubmit = () => {
 
 <style scoped>
 .contact-container {
-  max-width: 800px;
-  margin: 0 auto;
-  padding: 20px;
+  max-width: 1200px;
+  margin: 0 50px;
+  padding: 40px;
 }
 
 .contact-form {
