@@ -1,7 +1,7 @@
 [
   {
     "id": "1",
-    "url": "/assets/fig/photo-light.JPG",
+    "url": "photo-light.JPG",
     "title": "山间日出",
     "tags": ["风景", "自然"],
     "cameraParams": {
@@ -14,7 +14,7 @@
   },
   {
     "id": "2",
-    "url": "/assets/fig/photo-dark.JPG",
+    "url": "photo-dark.JPG",
     "title": "城市夜景",
     "tags": ["夜景", "城市"],
     "cameraParams": {
@@ -27,7 +27,7 @@
   },
   {
     "id": "3",
-    "url": "/assets/fig/photo-light.JPG",
+    "url": "photo-light.JPG",
     "title": "古老建筑",
     "tags": ["旅行", "建筑"],
     "cameraParams": {
@@ -40,7 +40,7 @@
   },
   {
     "id": "4",
-    "url": "/assets/fig/photo-dark.JPG",
+    "url": "photo-dark.JPG",
     "title": "传统美食",
     "tags": ["美食", "文化"],
     "cameraParams": {
@@ -53,7 +53,7 @@
   },
   {
     "id": "5",
-    "url": "/assets/fig/photo-light.JPG",
+    "url": "photo-light.JPG",
     "title": "人像摄影",
     "tags": ["人像", "生活"],
     "cameraParams": {
@@ -66,7 +66,7 @@
   },
   {
     "id": "6",
-    "url": "/assets/fig/photo-dark.JPG",
+    "url": "photo-dark.JPG",
     "title": "星空摄影",
     "tags": ["夜景", "自然"],
     "cameraParams": {
