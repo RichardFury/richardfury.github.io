@@ -17,7 +17,7 @@
 
 <style scoped>
 .footer-container {
-  background-color: var(--bg-color);
+  background-color: transparent;
   color: var(--text-color);
   padding: 20px 0;
   width: 100%;

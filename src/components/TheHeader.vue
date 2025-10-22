@@ -122,7 +122,7 @@ onMounted(() => {
   position: flex;
   top: 0;
   z-index: 1000;
-  background-color: var(--bg-color);
+  background-color: transparent;
   width: 80%;
   margin: 0 auto;
   border-radius: 12px;
