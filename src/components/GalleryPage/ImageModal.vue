@@ -63,26 +63,7 @@
 
 <script setup>
 import { watch, computed, ref, onMounted, onUnmounted } from 'vue';
-
-// 相机参数组件
-const CameraParam = {
-  props: {
-    label: {
-      type: String,
-      required: true
-    },
-    value: {
-      type: String,
-      default: null
-    }
-  },
-  template: `
-    <div class="camera-param">
-      <span class="param-label">{{ label }}:</span>
-      <span class="param-value">{{ value || '未知' }}</span>
-    </div>
-  `
-};
+import CameraParam from './CameraParam.vue';
 
 // Props
 const props = defineProps({
@@ -316,6 +297,13 @@ watch(() => props.image, () => {
   height: 100%;
   background-color: #ffffff;
   border-left: 1px solid #e0e0e0;
+  overflow: hidden; /* 确保右侧区域不溢出 */
+}
+
+/* 深色主题下的右侧详情区域 */
+[data-theme='dark'] .info-section {
+  background-color: #1a1a1a;
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 /* 可滚动内容包装器 */
@@ -325,9 +313,11 @@ watch(() => props.image, () => {
   padding: 0;
   display: flex;
   flex-direction: column;
-  /* 自定义滚动条样式 */
+  flex-shrink: 0; /* 防止被压缩 */
+  overflow-y: auto; /* 允许相机参数区域内部滚动（如果需要） */
 }
 
+/* 浅色主题滚动条 */
 .info-scroll-wrapper::-webkit-scrollbar {
   width: 6px;
 }
@@ -345,10 +335,27 @@ watch(() => props.image, () => {
   background: #555;
 }
 
+/* 深色主题滚动条 */
+[data-theme='dark'] .info-scroll-wrapper::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+[data-theme='dark'] .info-scroll-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme='dark'] .info-scroll-wrapper::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.5);
+}
+
 /* 标题区域 */
 .title-area {
   padding: 30px 25px 15px;
   border-bottom: 1px solid #f0f0f0;
+}
+
+[data-theme='dark'] .title-area {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .photo-title {
@@ -366,6 +373,10 @@ watch(() => props.image, () => {
   font-weight: 500;
 }
 
+[data-theme='dark'] .image-index {
+  color: rgba(255, 255, 255, 0.6);
+}
+
 /* 详细内容区域 */
 .content-area {
   flex: 1;
@@ -381,11 +392,20 @@ watch(() => props.image, () => {
   color: #555;
 }
 
+[data-theme='dark'] .photo-description {
+  color: var(--text-color);
+}
+
 /* 相机参数区域 */
 .camera-area {
   padding: 25px;
   background-color: #fafafa;
   border-top: 1px solid #f0f0f0;
+}
+
+[data-theme='dark'] .camera-area {
+  background-color: rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .camera-title {
@@ -395,30 +415,15 @@ watch(() => props.image, () => {
   font-weight: 500;
 }
 
+/* 深色主题下的模态窗口内容 */
+[data-theme='dark'] .modal-content {
+  background-color: #1a1a1a;
+}
+
 .camera-params-list {
   display: flex;
   flex-direction: column;
   gap: 12px;
-}
-
-.camera-param {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0;
-}
-
-.param-label {
-  font-weight: 500;
-  color: #777;
-  font-size: 14px;
-}
-
-.param-value {
-  color: var(--text-color);
-  font-size: 14px;
-  font-family: 'Courier New', monospace;
-  font-weight: 500;
 }
 
 /* 响应式调整 */
