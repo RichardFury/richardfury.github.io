@@ -16,6 +16,8 @@
 </template>
 
 <script setup>
+import { extractSummary } from '../../utils/markdownProcessor.js';
+
 const props = defineProps({
   posts: {
     type: Array,
@@ -35,12 +37,9 @@ const formatDate = (dateString) => {
   });
 };
 
-// 获取摘要
+// 获取摘要，使用专业的markdown处理器
 const getExcerpt = (content) => {
-  // 移除markdown标记
-  const plainText = content.replace(/#{1,6}\s+/g, '').replace(/```[\s\S]*?```/g, '').replace(/`([^`]+)`/g, '$1');
-  // 返回前150个字符作为摘要
-  return plainText.length > 150 ? plainText.substring(0, 150) + '...' : plainText;
+  return extractSummary(content, 150);
 };
 
 // 选择文章

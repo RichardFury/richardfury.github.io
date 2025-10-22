@@ -66,6 +66,8 @@
 
 <script setup>
 import { ref, computed } from 'vue';
+import { renderMarkdown } from '../../utils/markdownProcessor.js';
+import '../../utils/markdownStyles.css';
 
 const props = defineProps({
   post: {
@@ -85,19 +87,12 @@ const commentForm = ref({
   content: ''
 });
 
-// 简单的markdown渲染（在实际项目中可以使用markdown-it等库）
+// 使用专业的markdown处理器进行渲染
 const renderedContent = computed(() => {
   if (!props.post || !props.post.content) return '';
   
-  let html = props.post.content;
-  
-  // 处理标题
-  html = html.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-  html = html.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-  html = html.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-  
-  // 处理段落
-  html = html.replace(/^(?!<h[1-6]|```|$)(.*$)/gm, '<p>$1</p>');
+  // 使用我们创建的markdownProcessor进行渲染
+  return renderMarkdown(props.post.content);
   
   // 处理代码块
   html = html.replace(/```([\s\S]*?)```/gm, '<pre><code>$1</code></pre>');
@@ -313,10 +308,32 @@ const submitComment = () => {
   color: #ddd;
 }
 
-/* 深色主题下的输入框样式 */
+/* 浅色主题下的输入框样式 - 弱边框效果 */
+[data-theme='light'] .form-group input,
+[data-theme='light'] .form-group textarea {
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  transition: border-color 0.2s ease;
+}
+
+/* 深色主题下的输入框样式 - 弱边框效果 */
 [data-theme='dark'] .form-group input,
 [data-theme='dark'] .form-group textarea {
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: border-color 0.2s ease;
+}
+
+/* 输入框聚焦时的样式 */
+.form-group input:focus,
+.form-group textarea:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
+}
+
+/* 深色主题下输入框聚焦时的样式 */
+[data-theme='dark'] .form-group input:focus,
+[data-theme='dark'] .form-group textarea:focus {
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
 }
 
 .submit-comment:disabled {

@@ -5,7 +5,6 @@ import vue from '@vitejs/plugin-vue'
 export default defineConfig({
   plugins: [vue()],
   // GitHub Pages部署的base路径配置
-  // 如果你的仓库名称是'newprofile'，则保持这个配置
-  // 如果你使用自定义域名，可以设置为'/'
-  base: '/newprofile/'
+  // 对于username.github.io格式的仓库，base路径设置为'/'
+  base: '/'
 })
