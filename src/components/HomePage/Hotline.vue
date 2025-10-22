@@ -1,19 +1,35 @@
 <template>
-  <div class="hotline">
+  <div class="hotline" ref="hotlineRef">
     <img :src="photoSrc" alt="Hotline Photo">
-    <div class="calligraphy" :style="{ color: textColor }">
+    <div class="calligraphy" :style="{ color: textColor, fontSize: fontSize }">
       {{ text }}
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted, computed, onUnmounted } from 'vue';
+import { ref, onMounted, computed, onUnmounted, nextTick } from 'vue';
 
 const theme = ref(document.documentElement.getAttribute('data-theme') || 'light');
+const hotlineRef = ref(null);
+const photoHeight = ref(0);
+
 const photoSrc = computed(() => theme.value === 'dark' ? '/assets/fig/photo-dark.JPG' : '/assets/fig/photo-light.JPG');
 const textColor = computed(() => theme.value === 'dark' ? 'white' : 'black');
-const text = computed(() => theme.value === 'dark' ? '而今迈步从头越' : '雄关漫道真如铁')
+const text = computed(() => theme.value === 'dark' ? '而今迈步从头越' : '雄关漫道真如铁');
+
+// 计算字体大小，基于照片高度的百分比
+const fontSize = computed(() => {
+  // 使用照片高度的20%作为字体大小，可根据需要调整这个比例
+  return `${photoHeight.value * 0.1}px`;
+});
+
+// 更新照片高度
+const updatePhotoHeight = () => {
+  if (hotlineRef.value) {
+    photoHeight.value = hotlineRef.value.offsetHeight;
+  }
+};
 
 const observer = new MutationObserver((mutationsList) => {
   for (const mutation of mutationsList) {
@@ -23,15 +39,23 @@ const observer = new MutationObserver((mutationsList) => {
   }
 });
 
-onMounted(() => {
+onMounted(async () => {
   observer.observe(document.documentElement, {
     attributes: true,
     attributeFilter: ['data-theme']
   });
+  
+  // 等待DOM更新完成后计算高度
+  await nextTick();
+  updatePhotoHeight();
+  
+  // 监听窗口大小变化，重新计算高度
+  window.addEventListener('resize', updatePhotoHeight);
 });
 
 onUnmounted(() => {
   observer.disconnect();
+  window.removeEventListener('resize', updatePhotoHeight);
 });
 </script>
 
@@ -96,11 +120,11 @@ onUnmounted(() => {
   left: 20%;
   writing-mode: vertical-rl;
   font-family: 'Liu Jian Mao Cao', cursive;
-  font-size: 4em;
   color: white;
   text-shadow: 1px 1px 2px black;
   padding: 10px;
   z-index: 1;
   background-color: transparent;
+  /* 字体大小将通过动态计算设置 */
 }
 </style>
