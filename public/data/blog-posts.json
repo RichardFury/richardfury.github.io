@@ -1,0 +1,62 @@
+[
+  {
+    "id": 1,
+    "title": "Future Directions in Human Mobility Science",
+    "excerpt": "Exploring three key development stages in human mobility science: cognitive, social, and algorithmic approaches to understanding human movement patterns.",
+    "author": "Richard Fury",
+    "date": "2024-01-15",
+    "category": "Research",
+    "readTime": "12 min",
+    "image": "https://picsum.photos/id/1025/800/600",
+    "keywords": "human mobility, spatial cognition, urban planning, AI simulation, transportation systems, future cities",
+    "file": "人类移动性科学未来发展展望.md"
+  },
+  {
+    "id": 2,
+    "title": "NuwaDynamics: Causal Spatio-Temporal Modeling",
+    "excerpt": "An innovative approach to identifying causal regions in data and empowering models with causal reasoning capabilities, particularly for Earth science tasks.",
+    "author": "Richard Fury",
+    "date": "2024-03-10",
+    "category": "Research",
+    "readTime": "15 min",
+    "image": "https://picsum.photos/id/1033/800/600",
+    "keywords": "causal modeling, spatio-temporal reasoning, NuwaDynamics, Earth science, weather prediction, urban computing, CVPR 2024",
+    "file": "发现动态系统中的关键部分.md"
+  },
+  {
+    "id": 3,
+    "title": "Language Models Represent Space and Time",
+    "excerpt": "Investigating whether LLMs have learned spatial and temporal representations through geographic and temporal information.",
+    "author": "Richard Fury",
+    "date": "2024-02-20",
+    "category": "Research",
+    "readTime": "10 min",
+    "image": "https://picsum.photos/id/1043/800/600",
+    "keywords": "LLM, spatial representation, temporal understanding, geographic knowledge, language models, ICLR 2024",
+    "file": "大语言模型中藏着时间和空间的秘密.md"
+  },
+  {
+    "id": 4,
+    "title": "ReKep: Spatio-Temporal Reasoning for Robotic Manipulation",
+    "excerpt": "Exploring relationship between spatial-temporal theory and keypoint constraints for robotic operations.",
+    "author": "Richard Fury",
+    "date": "2024-01-25",
+    "category": "Research",
+    "readTime": "8 min",
+    "image": "https://picsum.photos/id/1050/800/600",
+    "keywords": "ReKep, spatio-temporal reasoning, robotic manipulation, keypoint constraints, spatial-temporal theory",
+    "file": "李飞飞，ReKep：空间时间理论的关系关键点约束，用于机器人操作.md"
+  },
+  {
+    "id": 5,
+    "title": "The Platonic Representation Hypothesis",
+    "excerpt": "Investigating validity of Platonic representation hypothesis through model stitching experiments.",
+    "author": "Richard Fury",
+    "date": "2024-04-05",
+    "category": "Research",
+    "readTime": "10 min",
+    "image": "https://picsum.photos/id/1060/800/600",
+    "keywords": "Platonic representation, model stitching, AI model convergence, representation hypothesis, model capacity",
+    "file": "殊途同归的模型----柏拉图表征假说.md"
+  }
+]

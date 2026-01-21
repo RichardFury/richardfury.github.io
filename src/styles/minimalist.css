@@ -1,0 +1,952 @@
+/* ========================================
+   极简主义设计规范 - Richard Fury Home Page
+   专用样式文件
+   设计原则：大量留白、统一排版、简化动画
+======================================== */
+
+/* ========================================
+   1. 极简主义工具类
+======================================== */
+
+/* 大量留白工具类 */
+.minimal-padding-sm {
+  padding: var(--spacing-2xl) 0;
+}
+
+.minimal-padding-md {
+  padding: var(--spacing-3xl) 0;
+}
+
+.minimal-padding-lg {
+  padding: var(--spacing-4xl) 0;
+}
+
+.minimal-padding-xl {
+  padding: calc(var(--spacing-4xl) * 1.5) 0;
+}
+
+/* 居中对齐工具类 */
+.minimal-center {
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* 极简分隔线 */
+.minimal-divider {
+  width: 40px;
+  height: 1px;
+  background-color: var(--accent-tertiary);
+  margin: var(--spacing-xl) auto;
+  opacity: 0.5;
+}
+
+.minimal-divider-sm {
+  width: 30px;
+}
+
+.minimal-divider-lg {
+  width: 60px;
+}
+
+/* ========================================
+   2. 极简主义卡片样式
+======================================== */
+
+.minimal-card {
+  background-color: var(--bg-primary);
+  padding: var(--spacing-2xl);
+  border-radius: 8px;
+  border: 1px solid var(--glass-border);
+  transition: all 0.3s ease;
+  animation: fadeInUp 0.6s ease-out;
+  animation-fill-mode: both;
+}
+
+.minimal-card:hover {
+  transform: translateY(-4px);
+  border-color: var(--accent-tertiary);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+.minimal-card-sm {
+  padding: var(--spacing-xl);
+}
+
+.minimal-card-lg {
+  padding: calc(var(--spacing-2xl) * 1.5);
+}
+
+/* ========================================
+   3. 极简主义按钮样式
+======================================== */
+
+.minimal-button {
+  display: inline-block;
+  padding: var(--spacing-md) var(--spacing-2xl);
+  background-color: var(--accent-primary);
+  color: var(--bg-primary);
+  text-decoration: none;
+  font-weight: 400;
+  font-size: 1rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  letter-spacing: 0.005em;
+  border: 2px solid var(--accent-primary);
+  cursor: pointer;
+}
+
+.minimal-button:hover {
+  background-color: transparent;
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+.minimal-button:focus {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+.minimal-button-sm {
+  padding: var(--spacing-sm) var(--spacing-xl);
+  font-size: 0.95rem;
+}
+
+.minimal-button-lg {
+  padding: var(--spacing-lg) calc(var(--spacing-2xl) * 1.5);
+  font-size: 1.1rem;
+}
+
+/* ========================================
+   4. 极简主义文本样式
+======================================== */
+
+/* 标题样式 */
+.minimal-h1 {
+  font-size: 4.5rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.minimal-h2 {
+  font-size: 2.25rem;
+  font-weight: 300;
+  letter-spacing: -0.015em;
+  line-height: 1.2;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+.minimal-h3 {
+  font-size: 1.5rem;
+  font-weight: 400;
+  letter-spacing: -0.01em;
+  line-height: 1.3;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: var(--text-primary);
+  margin-bottom: var(--spacing-md);
+}
+
+/* 副标题样式 */
+.minimal-subtitle {
+  font-size: 1.5rem;
+  font-weight: 300;
+  letter-spacing: 0.01em;
+  font-family: 'Playfair Display', 'Georgia', serif;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-xl);
+}
+
+/* 描述文本样式 */
+.minimal-description {
+  font-size: 1.125rem;
+  line-height: 1.8;
+  font-weight: 300;
+  letter-spacing: 0.005em;
+  color: var(--text-secondary);
+  margin-bottom: var(--spacing-md);
+}
+
+.minimal-description-sm {
+  font-size: 1rem;
+  line-height: 1.7;
+}
+
+/* ========================================
+   5. 极简主义网格布局
+======================================== */
+
+.minimal-grid-2 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+  .minimal-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--spacing-2xl);
+  }
+}
+
+.minimal-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--spacing-xl);
+}
+
+@media (min-width: 768px) {
+  .minimal-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--spacing-2xl);
+  }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+  .minimal-grid-3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ========================================
+   6. 极简主义动画
+======================================== */
+
+/* 淡入上移动画 */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 淡入缩放动画 */
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* 淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 动画延迟类 */
+.animation-delay-1 {
+  animation-delay: 0.1s;
+}
+
+.animation-delay-2 {
+  animation-delay: 0.2s;
+}
+
+.animation-delay-3 {
+  animation-delay: 0.3s;
+}
+
+.animation-delay-4 {
+  animation-delay: 0.4s;
+}
+
+.animation-delay-5 {
+  animation-delay: 0.5s;
+}
+
+/* ========================================
+   7. 极简主义响应式样式
+======================================== */
+
+/* 大屏幕优化 (1440px+) */
+@media (min-width: 1440px) {
+  .minimal-h1 {
+    font-size: 5rem;
+  }
+
+  .minimal-subtitle {
+    font-size: 1.75rem;
+  }
+
+  .minimal-description {
+    font-size: 1.25rem;
+  }
+}
+
+/* 中等屏幕优化 (1024px - 1439px) */
+@media (max-width: 1439px) and (min-width: 1024px) {
+  .minimal-h1 {
+    font-size: 4rem;
+  }
+
+  .minimal-subtitle {
+    font-size: 1.5rem;
+  }
+}
+
+/* 平板优化 (768px - 1023px) */
+@media (max-width: 1023px) {
+  .minimal-h1 {
+    font-size: 3.5rem;
+  }
+
+  .minimal-subtitle {
+    font-size: 1.25rem;
+  }
+
+  .minimal-description {
+    font-size: 1rem;
+  }
+
+  .minimal-h2 {
+    font-size: 2rem;
+  }
+
+  .minimal-h3 {
+    font-size: 1.25rem;
+  }
+}
+
+/* 移动设备优化 (480px - 767px) */
+@media (max-width: 767px) {
+  .minimal-h1 {
+    font-size: 2.75rem;
+  }
+
+  .minimal-subtitle {
+    font-size: 1.125rem;
+  }
+
+  .minimal-description {
+    font-size: 0.95rem;
+  }
+
+  .minimal-h2 {
+    font-size: 1.75rem;
+  }
+
+  .minimal-h3 {
+    font-size: 1.25rem;
+  }
+
+  .minimal-card {
+    padding: var(--spacing-xl);
+  }
+
+  .minimal-button {
+    padding: var(--spacing-sm) var(--spacing-xl);
+    font-size: 0.95rem;
+  }
+
+  .minimal-divider {
+    width: 30px;
+  }
+}
+
+/* 小屏幕优化 (最大 479px) */
+@media (max-width: 479px) {
+  .minimal-h1 {
+    font-size: 2.25rem;
+  }
+
+  .minimal-subtitle {
+    font-size: 1rem;
+  }
+
+  .minimal-description {
+    font-size: 0.9rem;
+  }
+
+  .minimal-h2 {
+    font-size: 1.5rem;
+  }
+
+  .minimal-h3 {
+    font-size: 1.125rem;
+  }
+
+  .minimal-card {
+    padding: var(--spacing-lg);
+  }
+
+  .minimal-button {
+    padding: var(--spacing-sm) var(--spacing-lg);
+    font-size: 0.9rem;
+  }
+}
+
+/* ========================================
+   8. 极简主义可访问性样式
+======================================== */
+
+/* 减少动画效果（尊重用户偏好） */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .minimal-card,
+  .minimal-button {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* 高对比度模式支持 */
+@media (prefers-contrast: high) {
+  .minimal-card {
+    border-width: 2px;
+  }
+
+  .minimal-button {
+    border-width: 3px;
+  }
+
+  .minimal-divider {
+    opacity: 0.8;
+  }
+}
+
+/* 焦点可见性增强 */
+*:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: 2px;
+}
+
+/* 文本选择样式 */
+::selection {
+  background-color: var(--accent-primary);
+  color: var(--bg-primary);
+}
+
+/* ========================================
+   9. 极简主义打印样式
+======================================== */
+
+@media print {
+  .minimal-padding-sm,
+  .minimal-padding-md,
+  .minimal-padding-lg,
+  .minimal-padding-xl {
+    padding: 2rem 0;
+  }
+
+  .minimal-card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+
+  .minimal-button {
+    display: none;
+  }
+
+  .minimal-divider {
+    border-color: #000;
+  }
+}
+
+/* ========================================
+   10. 极简主义实用工具
+======================================== */
+
+/* 文本对齐 */
+.text-left {
+  text-align: left;
+}
+
+.text-center {
+  text-align: center;
+}
+
+.text-right {
+  text-align: right;
+}
+
+/* 文本颜色 */
+.text-primary {
+  color: var(--text-primary);
+}
+
+.text-secondary {
+  color: var(--text-secondary);
+}
+
+.text-tertiary {
+  color: var(--text-tertiary);
+}
+
+.text-accent {
+  color: var(--accent-primary);
+}
+
+/* 背景颜色 */
+.bg-primary {
+  background-color: var(--bg-primary);
+}
+
+.bg-secondary {
+  background-color: var(--bg-secondary);
+}
+
+.bg-tertiary {
+  background-color: var(--bg-tertiary);
+}
+
+/* 边框圆角 */
+.rounded-sm {
+  border-radius: 4px;
+}
+
+.rounded-md {
+  border-radius: 6px;
+}
+
+.rounded-lg {
+  border-radius: 8px;
+}
+
+.rounded-xl {
+  border-radius: 12px;
+}
+
+/* 阴影效果 */
+.shadow-sm {
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.shadow-md {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+}
+
+.shadow-lg {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+/* 显示/隐藏 */
+.hidden {
+  display: none;
+}
+
+.invisible {
+  visibility: hidden;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ========================================
+   11. 极简主义主题特定样式
+======================================== */
+
+/* 深色主题特定 */
+[data-theme="dark"] .minimal-card {
+  background-color: var(--bg-primary-dark);
+  border-color: var(--glass-border-dark);
+}
+
+[data-theme="dark"] .minimal-button {
+  background-color: var(--accent-primary);
+  color: var(--bg-primary-dark);
+}
+
+[data-theme="dark"] .minimal-button:hover {
+  color: var(--accent-primary);
+}
+
+/* 浅色主题特定 */
+[data-theme="light"] .minimal-card {
+  background-color: var(--bg-primary-light);
+  border-color: var(--glass-border-light);
+}
+
+[data-theme="light"] .minimal-button {
+  background-color: var(--accent-primary);
+  color: var(--bg-primary-light);
+}
+
+[data-theme="light"] .minimal-button:hover {
+  color: var(--accent-primary);
+}
+
+/* ========================================
+   12. 极简主义交互反馈
+======================================== */
+
+/* 悬停效果增强 */
+.hover-lift {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift:hover {
+  transform: translateY(-4px);
+}
+
+.hover-lift-lg {
+  transition: transform 0.3s ease;
+}
+
+.hover-lift-lg:hover {
+  transform: translateY(-6px);
+}
+
+/* 淡入效果 */
+.fade-in {
+  animation: fadeIn 0.6s ease-out;
+}
+
+.fade-in-up {
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.fade-in-scale {
+  animation: fadeInScale 0.6s ease-out;
+}
+
+/* ========================================
+   13. 极简主义布局工具
+======================================== */
+
+/* 容器 */
+.minimal-container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--spacing-md);
+}
+
+.minimal-container-sm {
+  max-width: 800px;
+}
+
+.minimal-container-lg {
+  max-width: 1400px;
+}
+
+/* Flexbox工具 */
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.flex-wrap {
+  flex-wrap: wrap;
+}
+
+.items-center {
+  align-items: center;
+}
+
+.justify-center {
+  justify-content: center;
+}
+
+.justify-between {
+  justify-content: space-between;
+}
+
+.gap-sm {
+  gap: var(--spacing-sm);
+}
+
+.gap-md {
+  gap: var(--spacing-md);
+}
+
+.gap-lg {
+  gap: var(--spacing-lg);
+}
+
+.gap-xl {
+  gap: var(--spacing-xl);
+}
+
+/* ========================================
+   14. 极简主义滚动优化
+======================================== */
+
+/* 平滑滚动 */
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+/* 自定义滚动条 */
+.minimal-scrollbar::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.minimal-scrollbar::-webkit-scrollbar-track {
+  background: var(--bg-secondary);
+}
+
+.minimal-scrollbar::-webkit-scrollbar-thumb {
+  background: var(--accent-tertiary);
+  border-radius: 3px;
+}
+
+.minimal-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+/* ========================================
+   15. 极简主义加载状态
+======================================== */
+
+/* 骨架屏动画 */
+@keyframes skeleton {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--bg-secondary) 25%,
+    var(--bg-tertiary) 50%,
+    var(--bg-secondary) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton 1.5s infinite;
+  border-radius: 4px;
+}
+
+.skeleton-text {
+  height: 1em;
+  margin-bottom: var(--spacing-sm);
+}
+
+.skeleton-title {
+  height: 2em;
+  margin-bottom: var(--spacing-md);
+}
+
+.skeleton-card {
+  height: 200px;
+  border-radius: 8px;
+}
+
+/* ========================================
+   16. 极简主义过渡效果
+======================================== */
+
+/* 统一过渡类 */
+.transition-fast {
+  transition: all 0.15s ease;
+}
+
+.transition-normal {
+  transition: all 0.3s ease;
+}
+
+.transition-slow {
+  transition: all 0.6s ease;
+}
+
+/* 特定属性过渡 */
+.transition-opacity {
+  transition: opacity 0.3s ease;
+}
+
+.transition-transform {
+  transition: transform 0.3s ease;
+}
+
+.transition-color {
+  transition: color 0.3s ease, background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* ========================================
+   17. 极简主义位置工具
+======================================== */
+
+.position-relative {
+  position: relative;
+}
+
+.position-absolute {
+  position: absolute;
+}
+
+.position-fixed {
+  position: fixed;
+}
+
+.position-sticky {
+  position: sticky;
+}
+
+/* 定位 */
+.top-0 {
+  top: 0;
+}
+
+.right-0 {
+  right: 0;
+}
+
+.bottom-0 {
+  bottom: 0;
+}
+
+.left-0 {
+  left: 0;
+}
+
+/* Z-index */
+.z-10 {
+  z-index: 10;
+}
+
+.z-20 {
+  z-index: 20;
+}
+
+.z-30 {
+  z-index: 30;
+}
+
+.z-40 {
+  z-index: 40;
+}
+
+.z-50 {
+  z-index: 50;
+}
+
+/* ========================================
+   18. 极简主义尺寸工具
+======================================== */
+
+/* 宽度 */
+.w-full {
+  width: 100%;
+}
+
+.w-auto {
+  width: auto;
+}
+
+/* 高度 */
+.h-full {
+  height: 100%;
+}
+
+.h-auto {
+  height: auto;
+}
+
+.h-screen {
+  height: 100vh;
+}
+
+/* 最小/最大尺寸 */
+.min-h-screen {
+  min-height: 100vh;
+}
+
+.max-w-full {
+  max-width: 100%;
+}
+
+/* ========================================
+   19. 极简主义溢出工具
+======================================== */
+
+.overflow-hidden {
+  overflow: hidden;
+}
+
+.overflow-auto {
+  overflow: auto;
+}
+
+.overflow-scroll {
+  overflow: scroll;
+}
+
+.overflow-x-hidden {
+  overflow-x: hidden;
+}
+
+.overflow-y-auto {
+  overflow-y: auto;
+}
+
+/* ========================================
+   20. 极简主义显示工具
+======================================== */
+
+.block {
+  display: block;
+}
+
+.inline-block {
+  display: inline-block;
+}
+
+.inline {
+  display: inline;
+}
+
+.flex {
+  display: flex;
+}
+
+.inline-flex {
+  display: inline-flex;
+}
+
+.grid {
+  display: grid;
+}
+
+/* ========================================
+   结束
+======================================== */

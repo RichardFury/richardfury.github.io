@@ -1,390 +1,291 @@
-<template>
-  <div v-if="post" class="blog-detail">
-    <!-- 博客正文 -->
-    <div class="post-content">
-      <h1>{{ post.title }}</h1>
-      <div class="post-meta">
-        <span class="post-date">{{ formatDate(post.date) }}</span>
-        <span class="post-category">分类：{{ post.category }}</span>
-        <div class="post-tags">
-          标签：
-          <span v-for="tag in post.tags" :key="tag" class="tag">{{ tag }}</span>
-        </div>
-      </div>
-      <div class="markdown-content" v-html="renderedContent"></div>
-    </div>
-    
-    <!-- 评论区域 -->
-    <div class="comments-section">
-      <h2>评论 ({{ comments.length }})</h2>
-      
-      <!-- 评论表单 -->
-      <div class="comment-form">
-        <h3>发表评论</h3>
-        <div class="form-group">
-          <label for="author">昵称：</label>
-          <input 
-            id="author" 
-            v-model="commentForm.author" 
-            type="text" 
-            placeholder="请输入昵称" 
-          />
-        </div>
-        <div class="form-group">
-          <label for="content">评论内容：</label>
-          <textarea 
-            id="content" 
-            v-model="commentForm.content" 
-            rows="4" 
-            placeholder="请输入评论内容..." 
-          ></textarea>
-        </div>
-        <button 
-          class="submit-comment" 
-          @click="submitComment" 
-          :disabled="!commentForm.content.trim()"
-        >
-          提交评论
-        </button>
-      </div>
-      
-      <!-- 评论列表 -->
-      <div class="comments-list">
-        <div v-if="comments.length === 0" class="no-comments">暂无评论，来发表第一条评论吧！</div>
-        <div v-for="comment in comments" :key="comment.id" class="comment-item">
-          <div class="comment-header">
-            <span class="comment-author">{{ comment.author }}</span>
-            <span class="comment-date">{{ formatDate(comment.date) }}</span>
-          </div>
-          <div class="comment-body">{{ comment.content }}</div>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div v-else class="loading">加载中...</div>
-</template>
-
 <script setup>
-import { ref, computed } from 'vue';
-import { renderMarkdown } from '../../utils/markdownProcessor.js';
-import '../../utils/markdownStyles.css';
+import { ref, onMounted } from 'vue';
+import { useRoute } from 'vue-router';
+import { processMarkdown } from '../../utils/markdownProcessor';
+import { useBlogPosts } from '../../composables/useBlogPosts';
+import CommentsSection from './CommentsSection.vue';
+import { logger } from '../../utils/logger';
 
-const props = defineProps({
-  post: {
-    type: Object,
-    required: true
-  },
-  comments: {
-    type: Array,
-    default: () => []
+const route = useRoute();
+const postId = route.params.id;
+const { getBlogPostById, fetchBlogPosts } = useBlogPosts();
+
+const post = ref(null);
+const processedContent = ref('');
+const loading = ref(true);
+const error = ref(null);
+
+onMounted(async () => {
+  try {
+    await fetchBlogPosts();
+    const postData = await getBlogPostById(postId);
+    logger.debug('Post data received:', postData);
+    if (postData) {
+      post.value = postData;
+      logger.debug('Post content:', postData.content);
+      processedContent.value = processMarkdown(postData.content);
+      logger.debug('Processed content:', processedContent.value);
+    } else {
+      logger.debug('Post not found for ID:', postId);
+    }
+  } catch (err) {
+    error.value = err.message;
+    logger.error('Error loading blog post:', err);
+  } finally {
+    loading.value = false;
   }
 });
-
-const emit = defineEmits(['add-comment']);
-
-const commentForm = ref({
-  author: '',
-  content: ''
-});
-
-// 使用专业的markdown处理器进行渲染
-const renderedContent = computed(() => {
-  if (!props.post || !props.post.content) return '';
-  
-  // 使用我们创建的markdownProcessor进行渲染
-  return renderMarkdown(props.post.content);
-  
-  // 处理代码块
-  html = html.replace(/```([\s\S]*?)```/gm, '<pre><code>$1</code></pre>');
-  
-  // 处理行内代码
-  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
-  
-  // 处理列表
-  html = html.replace(/^\- (.*$)/gm, '<li>$1</li>');
-  html = html.replace(/<\/li>\s*<li>/g, '</li><li>');
-  html = html.replace(/<li>(.*)<\/li>/g, '<ul>$&</ul>');
-  
-  return html;
-});
-
-// 格式化日期
-const formatDate = (dateString) => {
-  const date = new Date(dateString);
-  return date.toLocaleDateString('zh-CN', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  });
-};
-
-// 提交评论
-const submitComment = () => {
-  if (!commentForm.value.content.trim()) return;
-  
-  emit('add-comment', {
-    author: commentForm.value.author || '匿名用户',
-    content: commentForm.value.content.trim()
-  });
-  
-  // 重置表单
-  commentForm.value.content = '';
-};
 </script>
+
+<template>
+  <section class="blog-detail">
+    <div class="container">
+      <!-- 返回按钮 -->
+      <div class="back-button">
+        <router-link to="/blog" class="btn btn-secondary">← Back to Blog</router-link>
+      </div>
+      
+      <!-- 加载状态 -->
+      <div v-if="loading" class="loading-state">
+        <p>Loading blog post...</p>
+      </div>
+      
+      <!-- 错误状态 -->
+      <div v-else-if="error" class="error-state">
+        <p>Error loading blog post: {{ error }}</p>
+      </div>
+      
+      <!-- 文章标题区域 -->
+      <div v-if="post" class="blog-detail-header glass-effect">
+        <h1 class="blog-detail-title">{{ post.title }}</h1>
+        <div class="blog-detail-meta">
+          <span class="post-category">{{ post.category }}</span>
+          <span class="post-date">{{ post.date }}</span>
+          <span class="post-read-time">{{ post.readTime }}</span>
+        </div>
+        <div class="blog-detail-image">
+          <img :src="post.image" :alt="post.title" class="detail-image">
+        </div>
+      </div>
+      
+      <!-- 文章内容 -->
+      <div v-if="post" class="blog-detail-content card">
+        <div class="markdown-content" v-html="processedContent"></div>
+      </div>
+      
+      <!-- 文章不存在状态 -->
+      <div v-else class="empty-state">
+        <p>Blog post not found.</p>
+      </div>
+      
+      <!-- 作者信息 -->
+      <div v-if="post" class="author-info glass-effect">
+        <div class="author-avatar">
+          <img src="https://picsum.photos/id/1005/100/100" alt="Richard Fury" class="avatar-img">
+        </div>
+        <div class="author-details">
+          <h3 class="author-name">About Author</h3>
+          <p class="author-bio">Richard Fury is a science researcher and landscape shutter exploring intersection of art, technology, and science.</p>
+        </div>
+      </div>
+      
+      <!-- 评论区 -->
+      <CommentsSection v-if="post" :post-id="post.id" />
+    </div>
+  </section>
+</template>
 
 <style scoped>
 .blog-detail {
+  padding: var(--spacing-2xl) 0;
+}
+
+/* 返回按钮 */
+.back-button {
+  margin-bottom: var(--spacing-xl);
+}
+
+/* 加载和错误状态 */
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+}
+
+.error-state {
+  color: var(--error-color);
+}
+
+/* 文章标题区域 */
+.blog-detail-header {
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  margin-bottom: var(--spacing-3xl);
+  text-align: center;
+}
+
+.blog-detail-title {
+  font-size: 2.5rem;
+  margin-bottom: var(--spacing-lg);
+  font-weight: 300;
+}
+
+.blog-detail-meta {
+  display: flex;
+  justify-content: center;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-2xl);
+  font-size: 0.9rem;
+}
+
+.blog-detail-image {
   width: 100%;
+  max-width: 800px;
   margin: 0 auto;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-.post-content {
-  background: var(--card-bg-color);
-  border-radius: 8px;
-  padding: 40px;
-  margin-bottom: 40px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+.detail-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
 }
 
-.post-content h1 {
-  font-size: 1.8em;
-  margin-bottom: 20px;
-  color: var(--text-color);
+/* 文章内容 */
+.blog-detail-content {
+  max-width: 800px;
+  margin: 0 auto var(--spacing-3xl);
+  padding: var(--spacing-3xl);
 }
 
-.post-meta {
-  margin-bottom: 30px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.post-date,
-.post-category {
-  display: inline-block;
-  margin-right: 20px;
-  color: var(--text-secondary-color);
-  font-size: 0.9em;
-}
-
-.post-tags {
-  margin-top: 10px;
-}
-
-.tag {
-  display: inline-block;
-  background: rgba(0, 0, 0, 0.1);
-  color: #333;
-  padding: 4px 12px;
-  border-radius: 16px;
-  font-size: 0.85em;
-  margin-right: 8px;
-  margin-top: 5px;
-}
-
+/* Markdown内容样式 */
 .markdown-content {
   line-height: 1.8;
-  color: var(--text-color);
+  color: var(--text-primary);
+}
+
+.markdown-content h1,
+.markdown-content h2,
+.markdown-content h3,
+.markdown-content h4,
+.markdown-content h5,
+.markdown-content h6 {
+  margin-top: var(--spacing-2xl);
+  margin-bottom: var(--spacing-lg);
+  font-weight: 400;
+  color: var(--text-primary);
+}
+
+.markdown-content h1 {
+  font-size: 2rem;
 }
 
 .markdown-content h2 {
-  font-size: 1.8em;
-  margin: 30px 0 20px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-color);
+  font-size: 1.75rem;
+  border-bottom: 1px solid var(--glass-border);
+  padding-bottom: var(--spacing-sm);
 }
 
 .markdown-content h3 {
-  font-size: 1.4em;
-  margin: 25px 0 15px;
+  font-size: 1.5rem;
 }
 
 .markdown-content p {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-lg);
 }
 
-.markdown-content pre {
-  background: #f5f5f5;
-  padding: 16px;
-  border-radius: 6px;
-  overflow-x: auto;
-  margin-bottom: 20px;
-}
-
-.markdown-content code {
-  background: #f5f5f5;
-  padding: 2px 6px;
-  border-radius: 3px;
-  font-family: 'Courier New', Courier, monospace;
-}
-
-.markdown-content pre code {
-  background: none;
-  padding: 0;
-}
-
-.markdown-content ul {
-  margin-bottom: 20px;
-  padding-left: 20px;
+.markdown-content ul,
+.markdown-content ol {
+  margin-bottom: var(--spacing-lg);
+  padding-left: var(--spacing-2xl);
 }
 
 .markdown-content li {
-  margin-bottom: 8px;
+  margin-bottom: var(--spacing-sm);
 }
 
-.comments-section {
-  background: var(--card-bg-color);
+.markdown-content a {
+  color: var(--accent-color);
+  text-decoration: none;
+  transition: color var(--transition-normal);
+}
+
+.markdown-content a:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+.markdown-content blockquote {
+  border-left: 4px solid var(--accent-color);
+  padding-left: var(--spacing-lg);
+  margin: var(--spacing-lg) 0;
+  font-style: italic;
+  color: var(--text-secondary);
+}
+
+.markdown-content code {
+  background-color: var(--glass-bg);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 4px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 0.9rem;
+}
+
+.markdown-content pre {
+  background-color: var(--glass-bg);
+  padding: var(--spacing-lg);
   border-radius: 8px;
-  padding: 40px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  overflow-x: auto;
+  margin-bottom: var(--spacing-lg);
 }
 
-.comments-section h2 {
-  font-size: 1.8em;
-  margin-bottom: 30px;
+.markdown-content pre code {
+  padding: 0;
+  background-color: transparent;
 }
 
-.comment-form {
-  margin-bottom: 40px;
-  padding-bottom: 30px;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.comment-form h3 {
-  font-size: 1.3em;
-  margin-bottom: 20px;
-}
-
-.form-group {
-  margin-bottom: 20px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 8px;
-  color: var(--text-color);
-}
-
-.form-group input,
-.form-group textarea {
-  width: 100%;
-  padding: 12px;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  background: var(--input-bg-color);
-  color: var(--text-color);
-  font-size: 1em;
-}
-
-.form-group textarea {
-  resize: vertical;
-  min-height: 100px;
-}
-
-.submit-comment {
-  border: none;
-  padding: 12px 30px;
-  border-radius: 6px;
-  font-size: 1em;
-  cursor: pointer;
-  transition: none;
-}
-
-/* 浅色主题下使用略深的背景色 */
-[data-theme='light'] .submit-comment:not(:disabled) {
-  background: var(--hover-bg-color-light);
-  color: var(--text-color);
-}
-
-/* 深色主题下使用略浅的背景色 */
-[data-theme='dark'] .submit-comment:not(:disabled) {
-  background: var(--hover-bg-color-dark);
-  color: var(--text-color);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 深色主题下的标签样式 */
-[data-theme='dark'] .tag {
-  background: rgba(255, 255, 255, 0.1);
-  color: #ddd;
-}
-
-/* 浅色主题下的输入框样式 - 弱边框效果 */
-[data-theme='light'] .form-group input,
-[data-theme='light'] .form-group textarea {
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  transition: border-color 0.2s ease;
-}
-
-/* 深色主题下的输入框样式 - 弱边框效果 */
-[data-theme='dark'] .form-group input,
-[data-theme='dark'] .form-group textarea {
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  transition: border-color 0.2s ease;
-}
-
-/* 输入框聚焦时的样式 */
-.form-group input:focus,
-.form-group textarea:focus {
-  outline: none;
-  border-color: var(--primary-color);
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.05);
-}
-
-/* 深色主题下输入框聚焦时的样式 */
-[data-theme='dark'] .form-group input:focus,
-[data-theme='dark'] .form-group textarea:focus {
-  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.05);
-}
-
-.submit-comment:disabled {
-  background: var(--disabled-bg-color);
-  color: var(--text-color);
-  cursor: not-allowed;
-}
-
-.comments-list {
-  margin-top: 30px;
-}
-
-.no-comments {
-  text-align: center;
-  color: var(--text-secondary-color);
-  padding: 40px 0;
-}
-
-.comment-item {
-  padding: 20px 0;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.comment-item:last-child {
-  border-bottom: none;
-}
-
-.comment-header {
+/* 作者信息 */
+.author-info {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
+  align-items: center;
+  gap: var(--spacing-lg);
+  padding: var(--spacing-2xl);
+  max-width: 800px;
+  margin: 0 auto;
 }
 
-.comment-author {
-  font-weight: bold;
-  color: var(--text-color);
+@media (max-width: 768px) {
+  .author-info {
+    flex-direction: column;
+    text-align: center;
+  }
 }
 
-.comment-date {
-  color: var(--text-secondary-color);
-  font-size: 0.9em;
+.author-avatar {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
 }
 
-.comment-body {
-  line-height: 1.6;
-  color: var(--text-color);
+.avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-.loading {
-  text-align: center;
-  padding: 100px;
-  color: var(--text-secondary-color);
+.author-name {
+  margin-bottom: var(--spacing-sm);
+  font-size: 1.25rem;
+}
+
+.author-bio {
+  margin: 0;
+  color: var(--text-secondary);
 }
 </style>

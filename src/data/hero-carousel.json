@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "backgroundImageLight": "https://rubin.canto.com/direct/image/a2s5gfkil919tce7nqaagtto7e/5L3zOXvcnkEBiWelZVsHdevTHAM/m800/2050",
+    "backgroundImageDark": "https://static.scientificamerican.com/dam/m/2b95fda2f7c8a281/original/vera_c_rubin_telescope_with_star_trails.jpg?m=1750081484.68",
+    "tag": "Research",
+    "title": "Cosmic Exploration",
+    "subtitle": "Unveiling mysteries of the universe",
+    "description": "Exploring the depths of dark matter and the origins of our universe through cosmological simulations.",
+    "link": "/research",
+    "buttonText": "Explore Research",
+    "secondaryLink": "/research",
+    "secondaryButtonText": "View Research",
+    "date": "January 2026",
+    "category": "Cosmology"
+  },
+  {
+    "id": 2,
+    "backgroundImageLight": "https://content.magnumphotos.com/wp-content/uploads/2020/08/cortex/nyc11161-560x374.jpg",
+    "backgroundImageDark": "https://content.magnumphotos.com/wp-content/uploads/2020/08/cortex/nyc11161-560x374.jpg",
+    "tag": "Art",
+    "title": "Thought and Vision",
+    "subtitle": "Finding beauty in simplicity",
+    "description": "Creating visual narratives that capture the essence of wonder through the lens of minimalism and artistic expression.",
+    "link": "/gallery",
+    "buttonText": "View Artwork",
+    "secondaryLink": "/blog",
+    "secondaryButtonText": "Read Blog",
+    "date": "December 2024",
+    "category": "Photography"
+  }
+]

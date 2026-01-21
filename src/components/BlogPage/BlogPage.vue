@@ -1,216 +1,289 @@
-<template>
-  <div class="thought-container">
-    <!-- 博客列表视图 -->
-    <div v-if="!selectedPostId" class="main-grid">
-      <div class="content-section">
-        <ContentComponent :posts="currentPagePosts" @selectPost="viewPost" />
-        <!-- 分页控件 -->
-        <div class="pagination" v-if="totalPages > 1">
-          <button 
-            class="pagination-btn" 
-            @click="goToPage(currentPage - 1)" 
-            :disabled="currentPage === 1"
-          >
-            上一页
-          </button>
-          
-          <span class="pagination-info">
-            第 {{ currentPage }} 页 / 共 {{ totalPages }} 页
-          </span>
-          
-          <button 
-            class="pagination-btn" 
-            @click="goToPage(currentPage + 1)" 
-            :disabled="currentPage === totalPages"
-          >
-            下一页
-          </button>
-        </div>
-      </div>
-      <ArticleListComponent :posts="posts" @selectPost="viewPost" />
-    </div>
-    
-    <!-- 博客详情视图 -->
-    <div v-else class="post-detail">
-      <button class="back-button" @click="backToList">&larr; 返回列表</button>
-      <BlogDetailComponent 
-        :post="selectedPost" 
-        :comments="postComments" 
-        @add-comment="handleAddComment" 
-      />
-    </div>
-  </div>
-</template>
-
 <script setup>
-import { ref, onMounted, computed } from 'vue';
-import ArticleListComponent from './ArticleListComponent.vue';
-import ContentComponent from './ContentComponent.vue';
-import BlogDetailComponent from './BlogDetailComponent.vue';
-import { getBlogPosts, getBlogPost, getComments, addComment } from '../../services/blogService.js';
+import { ref, computed, onMounted } from 'vue';
+import { useBlogPosts } from '../../composables/useBlogPosts';
 
-const posts = ref([]);
-const selectedPostId = ref(null);
-const postComments = ref([]);
+const { blogPosts, loading, error, fetchBlogPosts } = useBlogPosts();
+
+const postsPerPage = 4;
 const currentPage = ref(1);
-const postsPerPage = ref(5); // 每页显示的文章数量
 
-// 当前选中的博客文章
-const selectedPost = computed(() => {
-  if (!selectedPostId.value) return null;
-  return posts.value.find(post => post.id === selectedPostId.value) || null;
-});
-
-// 总页数
 const totalPages = computed(() => {
-  return Math.ceil(posts.value.length / postsPerPage.value);
+  return Math.ceil(blogPosts.value.length / postsPerPage);
 });
 
-// 当前页的文章
-const currentPagePosts = computed(() => {
-  const start = (currentPage.value - 1) * postsPerPage.value;
-  const end = start + postsPerPage.value;
-  return posts.value.slice(start, end);
+const displayedPosts = computed(() => {
+  const startIndex = (currentPage.value - 1) * postsPerPage;
+  const endIndex = startIndex + postsPerPage;
+  return blogPosts.value.slice(startIndex, endIndex);
 });
 
-// 跳转到指定页
-const goToPage = (page) => {
-  if (page < 1 || page > totalPages.value) return;
+function prevPage() {
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
+}
+
+function nextPage() {
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
+}
+
+function goToPage(page) {
   currentPage.value = page;
-};
+}
 
-// 获取所有博客文章
-onMounted(async () => {
-  try {
-    posts.value = await getBlogPosts();
-  } catch (error) {
-    console.error('Failed to load blog posts:', error);
-  }
+onMounted(() => {
+  fetchBlogPosts();
 });
-
-// 查看博客详情
-const viewPost = async (postId) => {
-  selectedPostId.value = postId;
-  // 加载评论
-  try {
-    postComments.value = await getComments(postId);
-  } catch (error) {
-    console.error('Failed to load comments:', error);
-    postComments.value = [];
-  }
-};
-
-// 返回博客列表
-const backToList = () => {
-  selectedPostId.value = null;
-};
-
-// 添加评论
-const handleAddComment = async (comment) => {
-  if (!selectedPostId.value || !comment.content) return;
-  
-  try {
-    const newComment = await addComment(selectedPostId.value, comment);
-    postComments.value.push(newComment);
-  } catch (error) {
-    console.error('Failed to add comment:', error);
-  }
-};
 </script>
 
+<template>
+  <section class="blog-page">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header glass-effect">
+        <h1 class="page-title">Blog</h1>
+        <p class="page-subtitle">Thoughts, insights, and creative explorations</p>
+      </div>
+      
+      <!-- Loading State -->
+      <div v-if="loading" class="loading-state">
+        <p>Loading blog posts...</p>
+      </div>
+      
+      <!-- Error State -->
+      <div v-else-if="error" class="error-state">
+        <p>Error loading blog posts: {{ error }}</p>
+      </div>
+      
+      <!-- Empty State -->
+      <div v-else-if="blogPosts.length === 0" class="empty-state">
+        <p>No blog posts available.</p>
+      </div>
+      
+      <!-- Blog Posts Grid -->
+      <template v-else>
+        <div class="blog-posts grid grid-2">
+          <article 
+            v-for="post in displayedPosts" 
+            :key="post.id"
+            class="blog-post card"
+          >
+            <div class="blog-post-image">
+              <img :src="post.image" :alt="post.title" class="post-image">
+            </div>
+            <div class="blog-post-content">
+              <div class="blog-post-meta">
+                <span class="post-category">{{ post.category }}</span>
+                <span class="post-date">{{ post.date }}</span>
+                <span class="post-read-time">{{ post.readTime }}</span>
+              </div>
+              <h2 class="blog-post-title">{{ post.title }}</h2>
+              <p class="blog-post-excerpt">{{ post.excerpt }}</p>
+              <div class="blog-post-footer">
+                <router-link :to="`/blog/${post.id}`" class="btn btn-secondary">Read More</router-link>
+              </div>
+            </div>
+          </article>
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination" v-if="totalPages > 1">
+          <button 
+            class="btn btn-secondary" 
+            @click="prevPage" 
+            :disabled="currentPage === 1"
+          >
+            Previous
+          </button>
+          <button 
+            v-for="page in totalPages" 
+            :key="page"
+            class="btn" 
+            :class="{ 'active': page === currentPage }"
+            @click="goToPage(page)"
+          >
+            {{ page }}
+          </button>
+          <button 
+            class="btn btn-secondary" 
+            @click="nextPage" 
+            :disabled="currentPage === totalPages"
+          >
+            Next
+          </button>
+        </div>
+      </template>
+    </div>
+  </section>
+</template>
+
 <style scoped>
-.thought-container {
-  max-width: 1200px;
-  margin: 0 50px; /* 左右添加50px的margin */
-  padding: 40px;
+.blog-page {
+  padding: var(--spacing-2xl) 0;
 }
 
-.main-grid {
-  display: grid;
-  grid-template-columns: 1fr 250px;
-  gap: 40px;
-  align-items: start;
-  min-height: calc(100vh - 160px);
+/* Page Header */
+.page-header {
+  padding: var(--spacing-3xl) var(--spacing-lg);
+  margin-bottom: var(--spacing-3xl);
+  text-align: center;
+  animation: fadeIn var(--transition-slow) ease;
 }
 
-.content-section {
+.page-title {
+  font-size: 3rem;
+  margin-bottom: var(--spacing-sm);
+  font-weight: 200;
+}
+
+@media (max-width: 768px) {
+  .page-title {
+    font-size: 2.5rem;
+  }
+}
+
+.page-subtitle {
+  font-size: 1.25rem;
+  color: var(--text-secondary);
+  margin: 0;
+  font-weight: 300;
+}
+
+/* Blog Posts Grid */
+.blog-posts {
+  margin-bottom: var(--spacing-3xl);
+}
+
+/* Blog Post Card */
+.blog-post {
+  overflow: hidden;
+  transition: all var(--transition-normal);
+  animation: fadeIn var(--transition-slow) ease forwards;
+}
+
+.blog-post:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+}
+
+.blog-post-image {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  margin-bottom: var(--spacing-lg);
+}
+
+.post-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-slow);
+}
+
+.blog-post:hover .post-image {
+  transform: scale(1.05);
+}
+
+/* Blog Post Content */
+.blog-post-meta {
   display: flex;
-  flex-direction: column;
-  gap: 30px;
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.85rem;
+  color: var(--text-secondary);
 }
 
-/* 分页控件样式 */
+.post-category {
+  background-color: var(--accent-primary);
+  color: var(--bg-primary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: 4px;
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.blog-post-title {
+  font-size: 1.5rem;
+  margin-bottom: var(--spacing-md);
+  font-weight: 400;
+  transition: color var(--transition-normal);
+}
+
+.blog-post:hover .blog-post-title {
+  color: var(--accent-primary);
+}
+
+.blog-post-excerpt {
+  margin-bottom: var(--spacing-lg);
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.blog-post-footer {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Loading, Error, and Empty States */
+.loading-state,
+.error-state,
+.empty-state {
+  text-align: center;
+  padding: var(--spacing-2xl);
+  font-size: 1.125rem;
+  color: var(--text-secondary);
+}
+
+.error-state {
+  color: var(--error-color);
+}
+
+/* Pagination */
 .pagination {
   display: flex;
   justify-content: center;
-  align-items: center;
-  gap: 20px;
-  margin-top: 20px;
-  padding: 20px 0;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
 }
 
-.pagination-btn {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  padding: 8px 16px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background 0.3s;
+.pagination .btn {
+  min-width: 40px;
+  text-align: center;
+  padding: var(--spacing-sm) var(--spacing-md);
 }
 
-.pagination-btn:hover:not(:disabled) {
-  background: var(--primary-hover-color);
+.pagination .btn.active {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  border: 1px solid var(--border-color);
 }
 
-.pagination-btn:disabled {
-  background: var(--disabled-bg-color);
+.pagination .btn:disabled {
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.pagination-info {
-  color: var(--text-color);
-  font-size: 0.9em;
+.pagination .btn:disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 
-/* 博客详情页面样式 */
-.post-detail {
-  width: 90%;
-  margin: 0 auto;
+/* Animation Delay */
+.blog-post:nth-child(1) {
+  animation-delay: 0.1s;
 }
 
-.back-button {
-  border: none;
-  padding: 10px 20px;
-  border-radius: 6px;
-  font-size: 1em;
-  cursor: pointer;
-  margin-bottom: 30px;
-  transition: none;
+.blog-post:nth-child(2) {
+  animation-delay: 0.2s;
 }
 
-/* 浅色主题下使用略深的背景色 */
-[data-theme='light'] .back-button {
-  background: var(--hover-bg-color-light);
-  color: var(--text-color);
+.blog-post:nth-child(3) {
+  animation-delay: 0.3s;
 }
 
-/* 深色主题下使用略浅的背景色 */
-[data-theme='dark'] .back-button {
-  background: var(--hover-bg-color-dark);
-  color: var(--text-color);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-/* 响应式设计 */
-@media (max-width: 768px) {
-  .thought-container {
-    padding: 20px;
-  }
-  
-  .main-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
+.blog-post:nth-child(4) {
+  animation-delay: 0.4s;
 }
 </style>

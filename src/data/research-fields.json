@@ -1,0 +1,23 @@
+[
+  {
+    "id": 1,
+    "title": "Large-Scale Structure",
+    "description": "Investigating origins, evolution, and large-scale structure of the universe, including cosmic inflation and the Big Bang.",
+    "icon": "https://www.universetoday.com/article_images/cosmicvoid.jpg",
+    "keywords": "computational cosmology, large-scale structure"
+  },
+  {
+    "id": 2,
+    "title": "Dark Matter Physics",
+    "description": "Exploring the nature of dark matter particles through direct detection experiments, particle physics models, and astrophysical observations.",
+    "icon": "https://www.esa.int/var/esa/storage/images/esa_multimedia/images/2007/07/the_bullet_cluster2/10084622-2-eng-GB/The_Bullet_Cluster.jpg",
+    "keywords": "dark matter, direct detection, particle physics, WIMP, axion, astrophysical observations"
+  },
+  {
+    "id": 3,
+    "title": "Neutrino Cosmology",
+    "description": "Studying the role of neutrinos in cosmic evolution, including sterile neutrino candidates and their impact on structure formation.",
+    "icon": "https://cdn.arstechnica.net/wp-content/uploads/2018/07/neutrino5HR-1152x648.jpg",
+    "keywords": "neutrinos, sterile neutrinos, cosmology, early universe"
+  }
+]

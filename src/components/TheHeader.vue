@@ -1,195 +1,357 @@
-<template>
-  <header class="header">
-    <div class="container">
-      <h1 class="title" style="font-family: 'Corinthia', cursive; font-size: 48px;"><router-link to="/">Richard Fury</router-link></h1>
-      <nav class="nav">
-        <ul>
-          <li><router-link to="/">Home</router-link></li>
-          <li><router-link to="/research">Research</router-link></li>
-          <li><router-link to="/life">Life</router-link></li>
-          <li><router-link to="/gallery">Gallery</router-link></li>
-          <li><router-link to="/blog">Blog</router-link></li>
-          <li><router-link to="/contact">Contact</router-link></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
-</template>
 <script setup>
-import { onMounted } from 'vue';
+import { ref, computed, onMounted, onUnmounted } from 'vue';
+import { useRouter } from 'vue-router';
 
-// 主题管理已由App.vue统一处理，此处不再重复实现
+const props = defineProps({
+  theme: {
+    type: String,
+    default: 'light'
+  }
+});
+
+const emit = defineEmits(['toggle-theme']);
+const router = useRouter();
+const isMobileMenuOpen = ref(false);
+const isScrolled = ref(false);
+
+// 导航链接数据
+const navLinks = [
+  { name: 'Home', path: '/' },
+  // { name: 'CV', path: '/cv' }, // 暂时注释掉CV导航项
+  { name: 'Research', path: '/research' },
+  { name: 'Blog', path: '/blog' },
+  { name: 'Gallery', path: '/gallery' },
+  { name: 'Contact', path: '/contact' }
+];
+
+// 切换主题
+function handleToggleTheme() {
+  emit('toggle-theme');
+}
+
+// 切换移动菜单
+function toggleMobileMenu() {
+  isMobileMenuOpen.value = !isMobileMenuOpen.value;
+}
+
+// 导航到指定路径
+function navigateTo(path) {
+  router.push(path);
+  isMobileMenuOpen.value = false;
+}
+
+// 计算当前激活的导航项
+const activeNavItem = computed(() => {
+  return router.currentRoute.value.path;
+});
+
+// 监听滚动事件
+const handleScroll = () => {
+  isScrolled.value = window.scrollY > 50;
+};
+
+// 组件挂载
 onMounted(() => {
-  // 确保主题已正确应用
-  const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-  document.documentElement.setAttribute('data-theme', currentTheme);
+  window.addEventListener('scroll', handleScroll);
+});
+
+// 组件卸载
+onUnmounted(() => {
+  window.removeEventListener('scroll', handleScroll);
 });
 </script>
 
+<template>
+  <header 
+    class="nav glass-effect"
+    :class="{ 'scrolled': isScrolled }"
+  >
+    <div class="container">
+      <div class="nav-content">
+        <!-- Logo -->
+        <div class="nav-logo" @click="navigateTo('/')">
+          <h1 class="logo-text">Richard Fury</h1>
+        </div>
+        
+        <!-- 桌面导航 -->
+        <nav class="nav-desktop">
+          <ul class="nav-list">
+            <li 
+              v-for="link in navLinks" 
+              :key="link.path"
+              class="nav-item"
+            >
+              <a 
+                :href="link.path"
+                @click.prevent="navigateTo(link.path)"
+                :class="{ 'nav-link-active': activeNavItem === link.path }"
+                class="nav-link"
+              >
+                {{ link.name }}
+              </a>
+            </li>
+          </ul>
+        </nav>
+        
+        <!-- 主题切换 -->
+        <div class="theme-toggle" @click="handleToggleTheme" aria-label="Toggle theme">
+          <svg v-if="theme === 'light'" class="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <svg v-else class="theme-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+        </div>
+        
+        <!-- 移动菜单按钮 -->
+        <button 
+          class="mobile-menu-btn"
+          @click="toggleMobileMenu"
+          aria-label="Toggle menu"
+        >
+          <span class="menu-icon">{{ isMobileMenuOpen ? '✕' : '☰' }}</span>
+        </button>
+      </div>
+      
+      <!-- 移动导航菜单 -->
+      <div 
+        v-if="isMobileMenuOpen"
+        class="nav-mobile glass-effect"
+      >
+        <ul class="nav-list-mobile">
+          <li 
+            v-for="link in navLinks" 
+            :key="link.path"
+            class="nav-item-mobile"
+          >
+            <a 
+              :href="link.path"
+              @click.prevent="navigateTo(link.path)"
+              :class="{ 'nav-link-active': activeNavItem === link.path }"
+              class="nav-link-mobile"
+            >
+              {{ link.name }}
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </header>
+</template>
+
 <style scoped>
-.title {
-  font-family: 'Corinthia', cursive;
-  font-size: 48px;
-  margin: 0;
-}
-
-.title a {
-  text-decoration: none;
-  color: inherit;
-}
-
-.nav a {
-  text-decoration: none;
-  color: var(--text-color);
-  font-family: 'DM Serif Text', serif;
-  padding: 5px 10px;
-  border-radius: 4px;
-  transition: all 0.3s ease;
-}
-
-.nav a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-  
-  /* 响应式设计 */
-  @media (max-width: 768px) {
-    .container {
-      flex-direction: column;
-      gap: 1rem;
-    }
-    
-    .nav ul {
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1rem;
-    }
-  }
-  
-  .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 2px;
-  left: 2px;
-  right: 2px;
-  bottom: 2px;
-  width: 100%;
-  height: 30px;
-  background-color: var(--slider-bg);
-  border-radius: 34px;
-  transition: 0.4s;
-  z-index: 1;
-}
-
-.light {
-  transform: translateX(0);
-  background-color: var(--light-bg);
-  color: var(--light-color);
-  z-index: 1;
-  content: 'Dark';
-}
-
-.dark {
-  transform: translateX(100%);
-  background-color: var(--dark-bg);
-  z-index: 1;
-  color: var(--dark-color);
-  content: 'Light';
-}
-
-.dark-label {
-  color: var(--label-color);
-}
-
-.light-label, .dark-label {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  font-size: 12px;
-}
-.light-label {
-  color: var(--label-color);
-}
-
-.light-label {
-  left: 10px;
-}
-
-.dark-label {
-  right: 10px;
-}
-.header {
-  padding: 40px 0 20px 0;
-  position: flex;
+.nav {
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   z-index: 1000;
-  background-color: transparent;
-  width: 80%;
-  margin: 0 auto;
-  border-radius: 12px;
+  padding: var(--spacing-md) 0;
+  transition: all var(--transition-normal);
+  background: transparent;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
 }
 
-.container {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    width: 100%;
-    margin: 0 auto;
-    padding: 0 20px;
-  }
-
-  .title {
-    margin-left: 10%;
-  }
-
-  .nav {
-    margin-right: 10%;
-  }
-
-@media (max-width: 768px) {
-  .container {
-    max-width: 95%;
-    flex-direction: column;
-    padding: 10px;
-  }
-
-  .title {
-    margin-bottom: 15px;
-  }
+.nav.scrolled {
+  background: rgba(255, 255, 255, 0.50);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
 }
 
-.title {
-  font-size: 32px;
-  margin: 0;
-  color: var(--text-color);
-  font-family: 'Plus Jakarta Sans', sans-serif; /* 修改字体为Jakarta */
-  text-align: left;
+[data-theme="dark"] .nav.scrolled {
+  background: rgba(0, 0, 0, 0.50);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-.nav ul {
-  list-style: none;
+.nav-content {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.nav-logo {
+  cursor: pointer;
+  transition: transform var(--transition-normal);
+}
+
+.nav-logo:hover {
+  transform: scale(1.05);
+}
+
+.logo-text {
+  font-family: 'Whisper', serif;
+  font-size: 3rem;
+  font-weight: 550;
+  letter-spacing: 0.05em;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+/* 桌面导航样式 */
+.nav-desktop {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .nav-desktop {
+    display: block;
+  }
+}
+
+.nav-list {
+  display: flex;
+  list-style: none;
+  gap: var(--spacing-xl);
   margin: 0;
   padding: 0;
 }
 
-.nav a {
-  padding-left: 10px;
-  padding-right: 10px;
-  color: var(--nav-text-color);
-  text-decoration: none;
-  font-family: 'DM Serif Text', serif;
+.nav-item {
+  position: relative;
 }
 
-.title a {
+.nav-link {
+  color: var(--text-primary);
   text-decoration: none;
-  color: inherit;
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  transition: all var(--transition-normal);
+  padding: var(--spacing-sm) 0;
+  position: relative;
 }
 
+.nav-link:hover {
+  color: var(--accent-primary);
+}
 
+.nav-link-active {
+  color: var(--accent-primary);
+}
 
-.nav a:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-  color: var(--text-color);
-  transition: all 0.3s ease;
+.nav-link-active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background-color: var(--accent-primary);
+  border-radius: 1px;
+}
+
+/* 主题切换按钮 */
+.theme-toggle {
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  padding: var(--spacing-sm);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: var(--spacing-md);
+}
+
+.theme-icon {
+  width: 24px;
+  height: 24px;
+  color: var(--text-primary);
+  transition: all var(--transition-normal);
+}
+
+.theme-toggle:hover {
+  background-color: rgba(107, 114, 128, 0.15);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-toggle:hover .theme-icon {
+  transform: rotate(180deg);
+  color: var(--accent-primary);
+}
+
+[data-theme="dark"] .theme-toggle:hover .theme-icon {
+  color: var(--accent-secondary);
+}
+
+/* 移动菜单按钮 */
+.mobile-menu-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  padding: var(--spacing-sm);
+  transition: all var(--transition-normal);
+}
+
+.mobile-menu-btn:hover {
+  transform: scale(1.1);
+}
+
+@media (min-width: 768px) {
+  .mobile-menu-btn {
+    display: none;
+  }
+}
+
+/* 移动导航菜单 */
+.nav-mobile {
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-lg);
+  border-radius: 12px;
+  animation: slideDown var(--transition-normal) ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-list-mobile {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-item-mobile {
+  margin-bottom: var(--spacing-md);
+}
+
+.nav-item-mobile:last-child {
+  margin-bottom: 0;
+}
+
+.nav-link-mobile {
+  color: var(--text-primary);
+  text-decoration: none;
+  font-size: 1.1rem;
+  font-weight: 300;
+  transition: all var(--transition-normal);
+  display: block;
+  padding: var(--spacing-sm) 0;
+}
+
+.nav-link-mobile:hover {
+  color: var(--accent-primary);
+  transform: translateX(5px);
+}
+
+.nav-link-active {
+  color: var(--accent-primary);
 }
 </style>

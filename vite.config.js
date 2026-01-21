@@ -4,7 +4,34 @@ import vue from '@vitejs/plugin-vue'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  // GitHub Pages部署的base路径配置
-  // 对于username.github.io格式的仓库，base路径设置为'/'
-  base: '/'
+  // GitHub Pages 配置，base路径为仓库名称
+  base: '/richardfury.github.io/',
+  server: {
+    port: 3000,
+    open: true
+  },
+  build: {
+    outDir: 'dist',
+    sourcemap: false,
+    // 优化静态资源加载
+    rollupOptions: {
+      output: {
+        // 静态资源分类打包
+        assetFileNames: 'assets/[name]-[hash][extname]',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        entryFileNames: 'assets/[name]-[hash].js'
+      }
+    },
+    // 启用CSS代码分割
+    cssCodeSplit: true,
+    // 压缩代码
+    minify: 'terser',
+    // 移除console和debugger
+    terserOptions: {
+      compress: {
+        drop_console: true,
+        drop_debugger: true
+      }
+    }
+  }
 })

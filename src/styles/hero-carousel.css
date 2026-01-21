@@ -1,0 +1,996 @@
+/* ========================================
+   Hero Section UI/UX设计规范 - 无限轮播版本
+   设计原则：极简主义、稳重优雅、清晰层次、精致排版
+   设计重点：无限循环、流畅过渡、半透明导航、极简指示器
+
+   注意：CSS变量已移至全局文件 src/styles/hero-variables.css
+======================================== */
+
+/* ========================================
+   2. 全局容器
+======================================== */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  background-color: transparent;
+  color: #ffffff;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 跳过链接 */
+.skip-to-content {
+  position: absolute;
+  top: -40px;
+  left: 0;
+  background: #404040;
+  color: #ffffff;
+  padding: 8px 16px;
+  z-index: 100;
+  transition: top 0.3s ease;
+  text-decoration: none;
+  font-weight: var(--hero-weight-medium);
+}
+
+.skip-to-content:focus {
+  top: 0;
+}
+
+/* ========================================
+   3. 滚动轨道 - Swiper.js版本
+======================================== */
+.hero-carousel {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+  background-color: transparent;
+  color: #ffffff;
+  touch-action: pan-x;
+  -webkit-overflow-scrolling: touch;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+.swiper-wrapper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  box-sizing: border-box;
+  position: relative;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* 背景图片 */
+.hero-slide-bg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
+  overflow: hidden;
+}
+
+.hero-slide-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  filter: brightness(0.85);
+  transition: transform 0.8s var(--hero-ease-out), filter 0.6s var(--hero-ease-out);
+}
+
+/* 活动幻灯片的背景效果 */
+.hero-slide.active .hero-slide-bg img {
+  filter: brightness(0.85);
+  transform: scale(1.05);
+}
+
+/* 渐变叠加层 */
+.hero-slide-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1;
+  background: linear-gradient(
+    to top,
+    var(--hero-overlay-gradient-start) 0%,
+    var(--hero-overlay-gradient-mid) 40%,
+    var(--hero-overlay-gradient-end) 70%
+  );
+  transition: opacity 0.6s var(--hero-ease-out);
+}
+
+/* ========================================
+   5. 文字内容 - 极简主义设计
+   设计重点：清晰层次、稳重排版、简洁阴影、流畅动画
+======================================== */
+.hero-content {
+  position: absolute;
+  bottom: 18%;
+  left: 10%;
+  right: 10%;
+  z-index: 2;
+  text-align: left;
+  max-width: 1400px;
+  padding-right: 15%;
+}
+
+/* 标签 - 稳重精致设计 */
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: var(--hero-tag-bg-color);
+  border: 1px solid var(--hero-border-color);
+  border-radius: 4px;
+  font-family: var(--hero-font-mono);
+  font-size: var(--hero-caption);
+  font-weight: var(--hero-weight-regular);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--hero-tag-color);
+  margin-bottom: 1.5rem;
+  box-shadow: 0 1px 3px var(--hero-shadow);
+  animation: tagEnter 0.6s var(--hero-ease-out) 0.1s both;
+  position: relative;
+  transition: all 0.25s var(--hero-ease);
+}
+
+/* 标签圆点 */
+.hero-tag-dot {
+  width: 4px;
+  height: 4px;
+  background: var(--hero-tag-dot-color);
+  border-radius: 50%;
+}
+
+.hero-tag:hover {
+  background: var(--hero-tag-bg-hover);
+  border-color: var(--hero-border-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px var(--hero-shadow-hover);
+}
+
+/* 标题 - 扎实稳重版本 */
+.hero-title {
+  font-family: var(--hero-font-heading);
+  font-size: var(--hero-h1);
+  font-weight: var(--hero-weight-regular);
+  line-height: 1.2;
+  letter-spacing: var(--hero-spacing-tight);
+  color: var(--hero-title-color);
+  margin-bottom: 1.25rem;
+  animation: titleEnter 0.6s var(--hero-ease-out) 0.2s both;
+  position: relative;
+  /* 移除阴影以提高清晰度 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.hero-title-text {
+  display: inline-block;
+  /* 移除渐变效果，使用纯色以提高清晰度 */
+  color: var(--hero-title-color);
+}
+
+/* 副标题 - 稳重优雅版本 */
+.hero-subtitle {
+  font-family: var(--hero-font-body);
+  font-size: var(--hero-body);
+  font-weight: var(--hero-weight-light);
+  line-height: 1.5;
+  letter-spacing: var(--hero-spacing-normal);
+  color: var(--hero-subtitle-color);
+  margin-bottom: 1.25rem;
+  max-width: 700px;
+  animation: subtitleEnter 0.6s var(--hero-ease-out) 0.3s both;
+  text-shadow: 0 1px 3px var(--hero-text-shadow-color);
+}
+
+/* 描述 - 稳重易读版本 */
+.hero-description {
+  font-family: var(--hero-font-body);
+  font-size: calc(var(--hero-body) * 0.95);
+  font-weight: var(--hero-weight-regular);
+  line-height: 1.6;
+  letter-spacing: var(--hero-spacing-normal);
+  color: var(--hero-description-color);
+  margin-bottom: 1.75rem;
+  max-width: 650px;
+  animation: descriptionEnter 0.6s var(--hero-ease-out) 0.4s both;
+  text-shadow: 0 1px 2px var(--hero-text-shadow-color-light);
+}
+
+/* 按钮组 - 稳重现代设计 */
+.hero-buttons {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+  margin-top: var(--hero-spacing-lg);
+  animation: buttonsEnter 0.6s var(--hero-ease-out) 0.5s both;
+}
+
+/* 主按钮 - 稳重设计 */
+.hero-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--hero-button-bg-color);
+  color: var(--hero-button-text-color);
+  font-family: var(--hero-font-body);
+  font-size: var(--hero-caption);
+  font-weight: var(--hero-weight-medium);
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1px solid var(--hero-border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s var(--hero-ease);
+  box-shadow: 0 2px 6px var(--hero-shadow);
+  position: relative;
+}
+
+/* 按钮图标 */
+.hero-button-icon {
+  width: 14px;
+  height: 14px;
+  transition: transform 0.2s var(--hero-ease);
+}
+
+.hero-button:hover .hero-button-icon {
+  transform: translateX(2px);
+}
+
+.hero-button:hover {
+  background: var(--hero-button-bg-hover);
+  color: var(--hero-button-text-hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px var(--hero-shadow-hover);
+}
+
+.hero-button:active {
+  background: var(--hero-button-bg-active);
+  transform: translateY(0);
+}
+
+.hero-button:focus {
+  outline: 2px solid var(--hero-border-focus);
+  outline-offset: 2px;
+}
+
+/* 次要按钮 - 稳重设计 */
+.hero-button-secondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--hero-button-secondary-bg-color);
+  color: var(--hero-button-secondary-text-color);
+  font-family: var(--hero-font-body);
+  font-size: var(--hero-caption);
+  font-weight: var(--hero-weight-regular);
+  letter-spacing: 0.015em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border: 1.5px solid var(--hero-button-secondary-border-color);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.25s var(--hero-ease);
+  box-shadow: 0 1px 4px var(--hero-shadow);
+  position: relative;
+}
+
+.hero-button-secondary:hover {
+  background: var(--hero-button-secondary-bg-hover);
+  border-color: var(--hero-button-secondary-border-hover);
+  color: var(--hero-button-secondary-text-hover-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px var(--hero-shadow-hover);
+}
+
+.hero-button-secondary:active {
+  background: var(--hero-button-secondary-bg-active);
+  transform: translateY(0);
+}
+
+.hero-button-secondary:focus {
+  outline: 2px solid var(--hero-button-secondary-border-focus);
+  outline-offset: 2px;
+}
+
+/* ========================================
+   6. 导航按钮 - 已隐藏
+======================================== */
+.hero-navigation {
+  display: none;
+}
+
+/* ========================================
+   7. 滚动指示器 - 极简主义设计
+======================================== */
+.hero-indicators {
+  position: absolute;
+  bottom: 3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.5rem 1rem;
+  background: var(--hero-indicator-bg-color);
+  border: 1px solid var(--hero-indicator-border-color);
+  border-radius: 20px;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.3s var(--hero-ease);
+}
+
+/* 指示器按钮 - 极简圆形设计 */
+.hero-indicator {
+  width: 8px;
+  height: 8px;
+  background-color: var(--hero-indicator-default-color);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: all 0.3s var(--hero-ease);
+  position: relative;
+}
+
+/* 悬停状态 - 轻微放大 */
+.hero-indicator:hover {
+  background-color: var(--hero-indicator-hover-color);
+  transform: scale(1.3);
+}
+
+/* 焦点状态 */
+.hero-indicator:focus {
+  outline: 2px solid var(--hero-indicator-focus-color);
+  outline-offset: 2px;
+}
+
+/* 活动状态 - 当前幻灯片 */
+.hero-indicator.active {
+  background-color: var(--hero-indicator-active-color);
+  transform: scale(1.5);
+  box-shadow: 0 0 8px var(--hero-indicator-active-shadow);
+}
+
+/* 活动指示器的脉冲效果 */
+.hero-indicator.active::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-color: var(--hero-indicator-pulse-color);
+  animation: indicatorPulse 2s ease-in-out infinite;
+}
+
+/* ========================================
+   8. 无限轮播过渡动画
+======================================== */
+
+/* 淡入动画 - 用于幻灯片切换 */
+@keyframes fadeInSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 淡出动画 - 用于幻灯片切换 */
+@keyframes fadeOutSlide {
+  0% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+/* 瞬间移动 - 用于循环重置 */
+@keyframes instantMove {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+/* 指示器脉冲动画 */
+@keyframes indicatorPulse {
+  0%, 100% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* ========================================
+   9. 内容入场动画 - 极简主义风格
+======================================== */
+
+/* 标签入场动画 - 从左侧滑入 */
+@keyframes tagEnter {
+  0% {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 标题入场动画 - 从下方淡入 */
+@keyframes titleEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 副标题入场动画 - 从下方淡入 */
+@keyframes subtitleEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(25px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 描述入场动画 - 从下方淡入 */
+@keyframes descriptionEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 按钮组入场动画 - 从下方淡入 */
+@keyframes buttonsEnter {
+  0% {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ========================================
+   10. 响应式设计 - 极简主义版本
+======================================== */
+
+/* 大屏幕 (≥1440px) */
+@media (min-width: 1440px) {
+  .hero-carousel {
+    height: 100vh;
+  }
+
+  .hero-slide {
+    flex: 0 0 100%;
+  }
+
+  .hero-content {
+    bottom: 20%;
+    left: 10%;
+    right: 10%;
+    max-width: 1600px;
+  }
+
+  .hero-title {
+    font-size: 4rem;
+  }
+
+  .hero-subtitle {
+    font-size: 1rem;
+    max-width: 750px;
+  }
+
+  .hero-description {
+    font-size: 0.9375rem;
+    max-width: 700px;
+  }
+
+  .hero-navigation {
+    width: 48px;
+    height: 48px;
+  }
+
+  .hero-indicators {
+    bottom: 3.5rem;
+    gap: 1rem;
+  }
+
+  .hero-indicator {
+    width: 9px;
+    height: 9px;
+  }
+}
+
+/* 桌面 (1024px - 1439px) */
+@media (min-width: 1024px) and (max-width: 1439px) {
+  .hero-carousel {
+    height: 100vh;
+  }
+
+  .hero-slide {
+    flex: 0 0 100%;
+  }
+
+  .hero-content {
+    bottom: 20%;
+    left: 10%;
+    right: 10%;
+    max-width: 1400px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.5rem, 5vw, 4rem);
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.9375rem, 1.25vw, 1rem);
+    max-width: 700px;
+  }
+
+  .hero-description {
+    font-size: clamp(0.875rem, 1.15vw, 0.9375rem);
+    max-width: 650px;
+  }
+
+  .hero-navigation {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* 平板 (768px - 1023px) */
+@media (max-width: 1023px) {
+  .hero-carousel {
+    height: 100vh;
+  }
+
+  .hero-slide {
+    flex: 0 0 100%;
+  }
+
+  .hero-content {
+    bottom: 18%;
+    left: 8%;
+    right: 8%;
+    padding-right: 10%;
+  }
+
+  .hero-tag {
+    font-size: 0.7rem;
+    padding: 0.45rem 0.9rem;
+  }
+
+  .hero-tag-dot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .hero-title {
+    font-size: clamp(2.25rem, 4.5vw, 3.5rem);
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.875rem, 1.15vw, 1rem);
+    max-width: 100%;
+  }
+
+  .hero-description {
+    font-size: clamp(0.8125rem, 1.1vw, 0.9375rem);
+    line-height: 1.6;
+    max-width: 100%;
+  }
+
+  .hero-buttons {
+    gap: 0.875rem;
+  }
+
+  .hero-button,
+  .hero-button-secondary {
+    padding: 0.65rem 1.25rem;
+    font-size: 0.7rem;
+  }
+
+  .hero-button-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .hero-navigation {
+    width: 40px;
+    height: 40px;
+  }
+
+  .hero-navigation-prev {
+    left: var(--hero-spacing-md);
+  }
+
+  .hero-navigation-next {
+    right: var(--hero-spacing-md);
+  }
+
+  .hero-indicators {
+    bottom: 2.5rem;
+    gap: 0.6rem;
+    padding: 0.4rem 0.8rem;
+  }
+
+  .hero-indicator {
+    width: 7px;
+    height: 7px;
+  }
+}
+
+/* 移动 (480px - 767px) */
+@media (max-width: 767px) {
+  .hero-carousel {
+    height: 100vh;
+    min-height: 500px;
+  }
+
+  .hero-slide {
+    flex: 0 0 100%;
+  }
+
+  .hero-content {
+    bottom: 15%;
+    left: 6%;
+    right: 6%;
+    padding-right: 0;
+  }
+
+  .hero-tag {
+    font-size: 0.65rem;
+    padding: 0.4rem 0.8rem;
+    letter-spacing: 0.015em;
+  }
+
+  .hero-tag-dot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+
+  .hero-subtitle {
+    font-size: clamp(0.8125rem, 1.1vw, 0.9375rem);
+    max-width: 100%;
+    line-height: 1.5;
+  }
+
+  .hero-description {
+    font-size: clamp(0.75rem, 1vw, 0.875rem);
+    line-height: 1.6;
+    max-width: 100%;
+  }
+
+  .hero-buttons {
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+
+  .hero-button,
+  .hero-button-secondary {
+    width: 100%;
+    justify-content: center;
+    padding: 0.65rem 1.25rem;
+    font-size: 0.65rem;
+  }
+
+  .hero-button-icon {
+    width: 12px;
+    height: 12px;
+  }
+
+  .hero-navigation {
+    width: 36px;
+    height: 36px;
+  }
+
+  .hero-navigation-prev {
+    left: var(--hero-spacing-sm);
+  }
+
+  .hero-navigation-next {
+    right: var(--hero-spacing-sm);
+  }
+
+  .hero-indicators {
+    bottom: 2rem;
+    gap: 0.5rem;
+    padding: 0.35rem 0.7rem;
+  }
+
+  .hero-indicator {
+    width: 6px;
+    height: 6px;
+  }
+}
+
+/* 小屏幕 (最大 479px) */
+@media (max-width: 479px) {
+  .hero-carousel {
+    height: 100vh;
+    min-height: 450px;
+  }
+
+  .hero-content {
+    bottom: 12%;
+    left: 5%;
+    right: 5%;
+  }
+
+  .hero-tag {
+    font-size: 0.6rem;
+    padding: 0.35rem 0.75rem;
+  }
+
+  .hero-tag-dot {
+    width: 3px;
+    height: 3px;
+  }
+
+  .hero-title {
+    font-size: clamp(1.75rem, 3.5vw, 2.5rem);
+    line-height: 1.2;
+  }
+
+  .hero-subtitle {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .hero-description {
+    font-size: 0.75rem;
+    line-height: 1.5;
+  }
+
+  .hero-button,
+  .hero-button-secondary {
+    padding: 0.6rem 1.125rem;
+    font-size: 0.6rem;
+  }
+
+  .hero-button-icon {
+    width: 10px;
+    height: 10px;
+  }
+
+  .hero-navigation {
+    width: 32px;
+    height: 32px;
+  }
+
+  .hero-navigation-icon {
+    width: 16px;
+    height: 16px;
+  }
+
+  .hero-indicators {
+    bottom: 1.5rem;
+    gap: 0.4rem;
+    padding: 0.3rem 0.6rem;
+  }
+
+  .hero-indicator {
+    width: 5px;
+    height: 5px;
+  }
+}
+
+/* 横屏模式 */
+@media (orientation: landscape) and (max-height: 600px) {
+  .hero-carousel {
+    height: 100vh;
+    min-height: 400px;
+  }
+
+  .hero-content {
+    bottom: 12%;
+    left: 8%;
+    right: 8%;
+    padding-right: 15%;
+  }
+
+  .hero-tag {
+    margin-bottom: 1rem;
+  }
+
+  .hero-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+  }
+
+  .hero-subtitle {
+    margin-bottom: 1rem;
+  }
+
+  .hero-description {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .hero-buttons {
+    margin-top: 1.25rem;
+  }
+
+  .hero-indicators {
+    bottom: 1.5rem;
+  }
+}
+
+/* ========================================
+   11. 可访问性
+======================================== */
+
+/* 屏幕阅读器专用 */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* 焦点可见性 */
+*:focus-visible {
+  outline: 2px solid var(--hero-focus-outline-color);
+  outline-offset: 2px;
+}
+
+/* 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .hero-content,
+  .hero-tag,
+  .hero-title,
+  .hero-subtitle,
+  .hero-description,
+  .hero-buttons,
+  .hero-navigation,
+  .hero-indicator {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+
+  .hero-track {
+    scroll-behavior: auto;
+  }
+
+  .hero-indicator.active::after {
+    animation: none;
+  }
+}
+
+/* 高对比度 */
+@media (prefers-contrast: high) {
+  .hero-button {
+    border-width: 3px;
+  }
+
+  .hero-indicator {
+    border-width: 2px;
+  }
+
+  .hero-navigation {
+    border-width: 2px;
+  }
+
+  .hero-indicators {
+    border-width: 2px;
+  }
+}
+
+/* 文本选择 */
+::selection {
+  background-color: var(--hero-selection-bg-color);
+  color: var(--hero-selection-text-color);
+}
+
+/* ========================================
+   12. 打印样式
+======================================== */
+@media print {
+  .hero-carousel {
+    height: auto;
+    min-height: auto;
+    max-height: none;
+  }
+
+  .hero-slide {
+    page-break-inside: avoid;
+  }
+
+  .hero-content {
+    position: relative;
+    bottom: auto;
+    left: auto;
+    right: auto;
+  }
+
+  .hero-navigation,
+  .hero-indicators {
+    display: none;
+  }
+
+  .skip-to-content {
+    display: none;
+  }
+}

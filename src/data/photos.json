@@ -1,0 +1,34 @@
+[
+  {
+    "id": 1,
+    "title": "祁连山",
+    "category": "Nature",
+    "image": "/images/gallery/祁连.JPG",
+    "thumbnail": "/images/gallery/祁连.JPG",
+    "original": "/images/gallery/祁连.JPG",
+    "description": "祁连山脉的壮丽景色，展现了中国西北高原的雄浑与辽阔，山峦起伏，云雾缭绕。",
+    "location": "祁连山, 中国甘肃",
+    "tags": ["山脉", "高原", "自然风光", "祁连山", "西北风光"],
+    "style": "Landscape",
+    "mood": "Majestic",
+    "colorPalette": ["gray", "blue", "white", "brown"],
+    "camera": "Fujifilm GFX 50S",
+    "lens": "Fujifilm GF 100-200mm F5.6 R LM OIS WR"
+  },
+  {
+    "id": 2,
+    "title": "雪山夕阳",
+    "category": "Nature",
+    "image": "/images/gallery/雪山夕阳.JPG",
+    "thumbnail": "/images/gallery/雪山夕阳.JPG",
+    "original": "/images/gallery/雪山夕阳.JPG",
+    "description": "雪山在夕阳余晖下的壮美景象，金色的阳光洒在雪峰之上，营造出温暖而神圣的氛围。",
+    "location": "祁连山, 中国甘肃",
+    "tags": ["雪山", "夕阳", "日落", "自然风光", "西北风光"],
+    "style": "Landscape",
+    "mood": "Serene",
+    "colorPalette": ["gold", "orange", "white", "blue"],
+    "camera": "Fujifilm GFX 50S",
+    "lens": "Fujifilm GF 100-200mm F5.6 R LM OIS WR"
+  }
+]

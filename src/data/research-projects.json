@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "title": "Tracing peculiar motion in cosmic web",
+    "year": "2025-2026",
+    "institution": "Department of Physics, Chinese University of Hong Kong",
+    "description": "Investigated the peculiar motion in cosmic web",
+    "outcomes": [
+      "Paper in preparation."
+    ],
+    "keywords": "Cosmology, cosmic web, peculiar motion"
+  },
+  {
+    "id": 2,
+    "title": "Impacts of light sterile neutrinos on halo properties",
+    "year": "2023-2025",
+    "institution": "Department of Physics, Chinese University of Hong Kong",
+    "description": "Investigated the impact of light sterile neutrinos on halo properties, e.g. halo shape, halo spin, halo concentration.",
+    "outcomes": [
+      "Paper in preparation."
+    ],
+    "keywords": "Cosmology, halo properties, light sterile neutrinos"
+  },
+  {
+    "id": 3,
+    "title": "Impacts of light sterile neutrinos on cosmic structure formation",
+    "year": "2022-2025",
+    "institution": "Department of Physics, Chinese University of Hong Kong",
+    "description": "Developing cosmological simulation with sterile neutrino involved and investigate their impact on cosmic structure formation.",
+    "outcomes": [
+      "Published 2 papers in MNRAS and JCAP",
+      "Developed a new method to constrain neutrino masses from large-scale structure data",
+      "Presented at the CosmoFundue, Geneva, Switzerland"
+    ],
+    "keywords": "sterile neutrinos, cosmological simulation, cosmic structure"
+  }
+]

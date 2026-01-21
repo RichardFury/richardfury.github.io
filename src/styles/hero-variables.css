@@ -1,0 +1,286 @@
+/* ========================================
+   Hero Section 全局CSS变量
+   设计原则：极简主义、稳重优雅、清晰层次、精致排版
+   设计重点：无限循环、流畅过渡、半透明导航、极简指示器
+======================================== */
+
+/* ========================================
+   1. CSS变量定义
+======================================== */
+:root {
+  /* Hero section专用文字颜色 - 支持主题切换 */
+  --hero-title-color-light: #000000;
+  --hero-title-color-dark: #ffffff;
+  --hero-subtitle-color-light: rgba(0, 0, 0, 0.85);
+  --hero-subtitle-color-dark: rgba(255, 255, 255, 0.85);
+  --hero-description-color-light: rgba(0, 0, 0, 0.75);
+  --hero-description-color-dark: rgba(255, 255, 255, 0.75);
+  --hero-tag-color-light: rgba(0, 0, 0, 0.85);
+  --hero-tag-color-dark: rgba(255, 255, 255, 0.85);
+
+  /* Hero section按钮颜色 - 浅色主题：深色背景 + 浅色文字 */
+  --hero-button-text-color-light: #ffffff;
+  --hero-button-text-hover-color-light: #e8e8e8;
+  --hero-button-bg-color-light: rgba(0, 0, 0, 0.85);
+  --hero-button-bg-hover-light: rgba(0, 0, 0, 0.95);
+  --hero-button-bg-active-light: rgba(0, 0, 0, 0.95);
+
+  /* Hero section按钮颜色 - 深色主题：浅色背景 + 深色文字 */
+  --hero-button-text-color-dark: #1a1a1a;
+  --hero-button-text-hover-color-dark: #0a0a0a;
+  --hero-button-bg-color-dark: rgba(255, 255, 255, 0.95);
+  --hero-button-bg-hover-dark: rgba(255, 255, 255, 1);
+  --hero-button-bg-active-dark: rgba(255, 255, 255, 1);
+
+  /* Hero section次要按钮颜色 - 浅色主题：半透明深色背景 + 浅色文字 */
+  --hero-button-secondary-text-color-light: #ffffff;
+  --hero-button-secondary-text-hover-color-light: #e8e8e8;
+  --hero-button-secondary-bg-color-light: rgba(0, 0, 0, 0.3);
+  --hero-button-secondary-bg-hover-light: rgba(0, 0, 0, 0.5);
+  --hero-button-secondary-bg-active-light: rgba(0, 0, 0, 0.5);
+
+  /* Hero section次要按钮颜色 - 深色主题：半透明浅色背景 + 深色文字 */
+  --hero-button-secondary-text-color-dark: #f5f5f5;
+  --hero-button-secondary-text-hover-color-dark: #d0d0d0;
+  --hero-button-secondary-bg-color-dark: rgba(255, 255, 255, 0.15);
+  --hero-button-secondary-bg-hover-dark: rgba(255, 255, 255, 0.25);
+  --hero-button-secondary-bg-active-dark: rgba(255, 255, 255, 0.25);
+
+  /* Hero section边框和阴影颜色 - 浅色主题 */
+  --hero-border-color-light: rgba(0, 0, 0, 0.8);
+  --hero-border-hover-light: rgba(0, 0, 0, 0.85);
+  --hero-border-focus-light: rgba(0, 0, 0, 0.9);
+  --hero-shadow-light: rgba(0, 0, 0, 0.06);
+  --hero-shadow-hover-light: rgba(0, 0, 0, 0.1);
+  --hero-shadow-focus-light: rgba(0, 0, 0, 0.12);
+
+  /* Hero section标签点颜色 - 浅色主题 */
+  --hero-tag-dot-color-light: rgba(0, 0, 0, 0.85);
+
+  /* Hero section次要按钮边框颜色 - 浅色主题 */
+  --hero-button-secondary-border-color-light: rgba(0, 0, 0, 0.7);
+  --hero-button-secondary-border-hover-light: rgba(0, 0, 0, 0.9);
+  --hero-button-secondary-border-focus-light: rgba(0, 0, 0, 1);
+
+  /* Hero section边框和阴影颜色 - 深色主题 */
+  --hero-border-color-dark: rgba(255, 255, 255, 0.8);
+  --hero-border-hover-dark: rgba(255, 255, 255, 0.85);
+  --hero-border-focus-dark: rgba(255, 255, 255, 0.9);
+  --hero-shadow-dark: rgba(0, 0, 0, 0.06);
+  --hero-shadow-hover-dark: rgba(0, 0, 0, 0.1);
+  --hero-shadow-focus-dark: rgba(0, 0, 0, 0.12);
+
+  /* Hero section标签点颜色 - 深色主题 */
+  --hero-tag-dot-color-dark: rgba(255, 255, 255, 0.85);
+  --hero-tag-dot-hover-dark: rgba(255, 255, 255, 0.9);
+
+  /* Hero section次要按钮边框颜色 - 深色主题 */
+  --hero-button-secondary-border-color-dark: rgba(255, 255, 255, 0.7);
+  --hero-button-secondary-border-hover-dark: rgba(255, 255, 255, 0.9);
+  --hero-button-secondary-border-focus-dark: rgba(255, 255, 255, 1);
+
+  /* Hero section渐变叠加层颜色 - 深色主题 */
+  --hero-overlay-gradient-start-dark: rgba(0, 0, 0, 0.8);
+  --hero-overlay-gradient-mid-dark: rgba(0, 0, 0, 0.4);
+  --hero-overlay-gradient-end-dark: rgba(0, 0, 0, 0);
+
+  /* Hero section渐变叠加层颜色 - 浅色主题 */
+  --hero-overlay-gradient-start-light: rgba(255, 255, 255, 0.8);
+  --hero-overlay-gradient-mid-light: rgba(255, 255, 255, 0.4);
+  --hero-overlay-gradient-end-light: rgba(255, 255, 255, 0);
+
+  /* Hero section标签背景颜色 */
+  --hero-tag-bg-color-light: rgba(0, 0, 0, 0.3);
+  --hero-tag-bg-color-dark: rgba(255, 255, 255, 0.3);
+
+  /* Hero section标签悬停背景颜色 */
+  --hero-tag-bg-hover-light: rgba(0, 0, 0, 0.5);
+  --hero-tag-bg-hover-dark: rgba(255, 255, 255, 0.5);
+
+  /* Hero section文字阴影颜色 */
+  --hero-text-shadow-color: rgba(0, 0, 0, 0.12);
+  --hero-text-shadow-color-light: rgba(0, 0, 0, 0.08);
+
+  /* Hero section指示器容器颜色 */
+  --hero-indicator-bg-color: rgba(255, 255, 255, 0.05);
+  --hero-indicator-border-color: rgba(255, 255, 255, 0.1);
+
+  /* Hero section指示器颜色 */
+  --hero-indicator-default-color: rgba(255, 255, 255, 0.3);
+  --hero-indicator-hover-color: rgba(255, 255, 255, 0.5);
+  --hero-indicator-focus-color: rgba(255, 255, 255, 0.6);
+  --hero-indicator-active-color: #ffffff;
+  --hero-indicator-active-shadow: rgba(255, 255, 255, 0.4);
+  --hero-indicator-pulse-color: rgba(255, 255, 255, 0.3);
+
+  /* Hero section焦点轮廓颜色 */
+  --hero-focus-outline-color: #ffffff;
+
+  /* Hero section文本选择颜色 */
+  --hero-selection-bg-color: rgba(255, 255, 255, 0.3);
+  --hero-selection-text-color: #000000;
+
+  /* 默认使用浅色主题 */
+  --hero-title-color: var(--hero-title-color-light);
+  --hero-subtitle-color: var(--hero-subtitle-color-light);
+  --hero-description-color: var(--hero-description-color-light);
+  --hero-tag-color: var(--hero-tag-color-light);
+  --hero-tag-dot-color: var(--hero-tag-dot-color-light);
+  --hero-button-text-color: var(--hero-button-text-color-light);
+  --hero-button-text-hover-color: var(--hero-button-text-hover-color-light);
+  --hero-button-bg-color: var(--hero-button-bg-color-light);
+  --hero-button-bg-hover: var(--hero-button-bg-hover-light);
+  --hero-button-bg-active: var(--hero-button-bg-active-light);
+  --hero-button-secondary-text-color: var(--hero-button-secondary-text-color-light);
+  --hero-button-secondary-text-hover-color: var(--hero-button-secondary-text-hover-color-light);
+  --hero-button-secondary-bg-color: var(--hero-button-secondary-bg-color-light);
+  --hero-button-secondary-bg-hover: var(--hero-button-secondary-bg-hover-light);
+  --hero-button-secondary-bg-active: var(--hero-button-secondary-bg-active-light);
+  --hero-border-color: var(--hero-border-color-light);
+  --hero-border-hover: var(--hero-border-hover-light);
+  --hero-border-focus: var(--hero-border-focus-light);
+  --hero-shadow: var(--hero-shadow-light);
+  --hero-shadow-hover: var(--hero-shadow-hover-light);
+  --hero-shadow-focus: var(--hero-shadow-focus-light);
+  --hero-button-secondary-border-color: var(--hero-button-secondary-border-color-light);
+  --hero-button-secondary-border-hover: var(--hero-button-secondary-border-hover-light);
+  --hero-button-secondary-border-focus: var(--hero-button-secondary-border-focus-light);
+  --hero-overlay-gradient-start: var(--hero-overlay-gradient-start-light);
+  --hero-overlay-gradient-mid: var(--hero-overlay-gradient-mid-light);
+  --hero-overlay-gradient-end: var(--hero-overlay-gradient-end-light);
+  --hero-tag-bg-color: var(--hero-tag-bg-color-light);
+  --hero-tag-bg-hover: var(--hero-tag-bg-hover-light);
+
+  /* 字体系统 */
+  --hero-font-heading: 'Playfair Display', 'Georgia', serif;
+  --hero-font-body: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --hero-font-mono: 'SF Mono', 'Fira Code', monospace;
+
+  /* 字号系统 - 扎实稳重版本 */
+  --hero-h1: clamp(2.5rem, 5vw, 4rem);
+  --hero-h2: clamp(1.75rem, 3.5vw, 2.5rem);
+  --hero-h3: clamp(1.25rem, 2.5vw, 1.75rem);
+  --hero-body: clamp(0.9375rem, 1.25vw, 1rem);
+  --hero-caption: clamp(0.75rem, 1vw, 0.8125rem);
+
+  /* 字重系统 - 扎实稳重版本 */
+  --hero-weight-light: 300;
+  --hero-weight-regular: 400;
+  --hero-weight-medium: 500;
+  --hero-weight-semibold: 600;
+
+  /* 字间距系统 - 舒适优雅版本 */
+  --hero-spacing-tight: -0.01em;
+  --hero-spacing-normal: 0.005em;
+  --hero-spacing-wide: 0.015em;
+  --hero-spacing-wider: 0.03em;
+
+  /* 行高系统 - 更紧凑、更有张力 */
+  --hero-leading-tight: 0.95;
+  --hero-leading-normal: 1.4;
+  --hero-leading-relaxed: 1.7;
+
+  /* 间距系统 */
+  --hero-spacing-xs: 0.5rem;
+  --hero-spacing-sm: 1rem;
+  --hero-spacing-md: 1.5rem;
+  --hero-spacing-lg: 2rem;
+  --hero-spacing-xl: 3rem;
+  --hero-spacing-2xl: 4rem;
+  --hero-spacing-3xl: 6rem;
+
+  /* 动画系统 - 简洁流畅版本 */
+  --hero-animation-fast: 0.15s;
+  --hero-animation-normal: 0.3s;
+  --hero-animation-slow: 0.6s;
+  --hero-animation-slower: 0.8s;
+
+  /* 缓动函数 - 更优雅 */
+  --hero-ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --hero-ease: cubic-bezier(0.23, 1, 0.32, 1);
+  --hero-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+
+  /* 玻璃效果 - 更精致 */
+  --hero-glass-bg: rgba(255, 255, 255, 0.08);
+  --hero-glass-border: rgba(255, 255, 255, 0.15);
+  --hero-glass-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+
+  /* 阴影系统 - 简洁层次 */
+  --hero-shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --hero-shadow-md: 0 4px 16px rgba(0, 0, 0, 0.15);
+  --hero-shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.18);
+
+  /* 断点系统 */
+  --hero-breakpoint-xs: 0px;
+  --hero-breakpoint-sm: 480px;
+  --hero-breakpoint-md: 768px;
+  --hero-breakpoint-lg: 1024px;
+  --hero-breakpoint-xl: 1280px;
+  --hero-breakpoint-2xl: 1440px;
+}
+
+/* 深色主题覆盖 */
+[data-theme="dark"] {
+  --hero-title-color: var(--hero-title-color-dark);
+  --hero-subtitle-color: var(--hero-subtitle-color-dark);
+  --hero-description-color: var(--hero-description-color-dark);
+  --hero-tag-color: var(--hero-tag-color-dark);
+  --hero-tag-dot-color: var(--hero-tag-dot-color-dark);
+  --hero-tag-bg-hover: var(--hero-tag-bg-hover-dark);
+  --hero-button-text-color: var(--hero-button-text-color-dark);
+  --hero-button-text-hover-color: var(--hero-button-text-hover-color-dark);
+  --hero-button-bg-color: var(--hero-button-bg-color-dark);
+  --hero-button-bg-hover: var(--hero-button-bg-hover-dark);
+  --hero-button-bg-active: var(--hero-button-bg-active-dark);
+  --hero-button-secondary-text-color: var(--hero-button-secondary-text-color-dark);
+  --hero-button-secondary-text-hover-color: var(--hero-button-secondary-text-hover-color-dark);
+  --hero-button-secondary-bg-color: var(--hero-button-secondary-bg-color-dark);
+  --hero-button-secondary-bg-hover: var(--hero-button-secondary-bg-hover-dark);
+  --hero-button-secondary-bg-active: var(--hero-button-secondary-bg-active-dark);
+  --hero-border-color: var(--hero-border-color-dark);
+  --hero-border-hover: var(--hero-border-hover-dark);
+  --hero-border-focus: var(--hero-border-focus-dark);
+  --hero-shadow: var(--hero-shadow-dark);
+  --hero-shadow-hover: var(--hero-shadow-hover-dark);
+  --hero-shadow-focus: var(--hero-shadow-focus-dark);
+  --hero-button-secondary-border-color: var(--hero-button-secondary-border-color-dark);
+  --hero-button-secondary-border-hover: var(--hero-button-secondary-border-hover-dark);
+  --hero-button-secondary-border-focus: var(--hero-button-secondary-border-focus-dark);
+  --hero-overlay-gradient-start: var(--hero-overlay-gradient-start-dark);
+  --hero-overlay-gradient-mid: var(--hero-overlay-gradient-mid-dark);
+  --hero-overlay-gradient-end: var(--hero-overlay-gradient-end-dark);
+  --hero-tag-bg-color: var(--hero-tag-bg-color-dark);
+}
+
+/* 浅色主题（默认） */
+[data-theme="light"] {
+  --hero-title-color: var(--hero-title-color-light);
+  --hero-subtitle-color: var(--hero-subtitle-color-light);
+  --hero-description-color: var(--hero-description-color-light);
+  --hero-tag-color: var(--hero-tag-color-light);
+  --hero-tag-dot-color: var(--hero-tag-dot-color-light);
+  --hero-tag-bg-hover: var(--hero-tag-bg-hover-light);
+  --hero-button-text-color: var(--hero-button-text-color-light);
+  --hero-button-text-hover-color: var(--hero-button-text-hover-color-light);
+  --hero-button-bg-color: var(--hero-button-bg-color-light);
+  --hero-button-bg-hover: var(--hero-button-bg-hover-light);
+  --hero-button-bg-active: var(--hero-button-bg-active-light);
+  --hero-button-secondary-text-color: var(--hero-button-secondary-text-color-light);
+  --hero-button-secondary-text-hover-color: var(--hero-button-secondary-text-hover-color-light);
+  --hero-button-secondary-bg-color: var(--hero-button-secondary-bg-color-light);
+  --hero-button-secondary-bg-hover: var(--hero-button-secondary-bg-hover-light);
+  --hero-button-secondary-bg-active: var(--hero-button-secondary-bg-active-light);
+  --hero-border-color: var(--hero-border-color-light);
+  --hero-border-hover: var(--hero-border-hover-light);
+  --hero-border-focus: var(--hero-border-focus-light);
+  --hero-shadow: var(--hero-shadow-light);
+  --hero-shadow-hover: var(--hero-shadow-hover-light);
+  --hero-shadow-focus: var(--hero-shadow-focus-light);
+  --hero-button-secondary-border-color: var(--hero-button-secondary-border-color-light);
+  --hero-button-secondary-border-hover: var(--hero-button-secondary-border-hover-light);
+  --hero-button-secondary-border-focus: var(--hero-button-secondary-border-focus-light);
+  --hero-overlay-gradient-start: var(--hero-overlay-gradient-start-light);
+  --hero-overlay-gradient-mid: var(--hero-overlay-gradient-mid-light);
+  --hero-overlay-gradient-end: var(--hero-overlay-gradient-end-light);
+  --hero-tag-bg-color: var(--hero-tag-bg-color-light);
+}

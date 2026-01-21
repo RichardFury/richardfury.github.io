@@ -1,127 +1,210 @@
-# Personal Portfolio Website
+# Richard Fury Portfolio
 
-这是一个个人作品集网站，使用Vue 3和Vite构建，包含多个功能模块展示个人信息、作品、研究、生活和博客内容。
+A minimalist personal portfolio website for Richard Fury, featuring a clean design with liquid glass effects and comprehensive content sections.
 
-## 📋 项目概述
+## 🌟 Features
 
-本项目是一个现代化的个人网站，旨在全面展示个人信息、作品集、研究成果、生活点滴和博客文章。网站采用响应式设计，支持明暗主题切换，并提供了丰富的交互功能。
+- **Minimalist Design**: Clean, elegant interface with lots of whitespace
+- **Liquid Glass Effects**: Modern glassmorphism design elements
+- **Responsive Layout**: Fully responsive across all devices
+- **Theme Support**: Dark and light theme switching
+- **Multiple Sections**: Home, CV, Blog, Research, Gallery, Contact
+- **Analytics Dashboard**: Hidden data visualization page with password protection
+- **Performance Optimized**: Fast loading and smooth animations
+- **Accessibility**: WCAG 2.1 AA compliant
 
-## 🚀 主要功能
+## 🚀 Tech Stack
 
-- **首页展示** - 个人简介和快速导航
-- **作品集展示** - 项目成果和案例展示
-- **研究页面** - 学术研究和技术探索内容
-- **生活页面** - 个人生活分享和兴趣爱好
-- **联系方式** - 提供多种联系方式
-- **博客系统** - 文章发布和评论功能
-  - Markdown格式的博客文章
-  - 评论系统（使用IndexedDB持久化存储）
-- **图片画廊** - 照片展示和浏览
-- **主题切换** - 支持明暗两种主题，并可跟随系统设置
-- **响应式设计** - 适配各种设备屏幕
+- **Frontend**: Vue 3 (Composition API)
+- **Build Tool**: Vite 6
+- **Styling**: CSS with CSS Variables
+- **Routing**: Vue Router 4
+- **Charts**: ECharts 6
+- **Maps**: Leaflet.js
+- **Security**: bcryptjs for password hashing
+- **Deployment**: GitHub Pages
 
-## 🛠 技术栈
+## 📦 Installation
 
-- **前端框架**: Vue 3 + Vite
-- **路由管理**: Vue Router 4
-- **动画效果**: GSAP
-- **图标库**: FontAwesome
-- **存储方案**: IndexedDB（浏览器端持久化）
-- **开发工具**: Vite, ESLint
-
-## 📁 项目结构
-
-```
-src/
-├── components/          # Vue组件
-│   ├── ContactPage/     # 联系页面组件
-│   ├── GalleryPage/     # 画廊页面组件
-│   ├── HomePage/        # 首页组件
-│   ├── LifePage/        # 生活页面组件
-│   ├── PortfolioPage/   # 作品集页面组件
-│   ├── ResearchPage/    # 研究页面组件
-│   ├── ThoughtPage/     # 博客页面组件
-│   ├── TheFooter.vue    # 页脚组件
-│   ├── TheHeader.vue    # 页眉组件
-│   ├── ThePreloader.vue # 预加载组件
-│   └── ThemeToggle.vue  # 主题切换组件
-├── data/                # 静态数据
-│   ├── blog/            # 博客文章(Markdown格式)
-│   └── galleryData.json # 画廊数据
-├── services/            # 服务层
-│   ├── blogService.js   # 博客服务
-│   ├── dbService.js     # 数据库服务
-│   └── galleryService.js # 画廊服务
-├── utils/               # 工具函数
-├── App.vue              # 根组件
-├── main.js              # 入口文件
-└── style.css            # 全局样式
-```
-
-## 📦 安装和运行
-
-### 前置要求
-
-- Node.js >= 16.x
-- npm >= 7.x
-
-### 安装步骤
-
-1. 克隆项目
 ```bash
-git clone <repository-url>
-cd newprofile
-```
+# Clone the repository
+git clone https://github.com/yourusername/richardfury.github.io.git
 
-2. 安装依赖
-```bash
+# Navigate to the project directory
+cd richardfury.github.io
+
+# Install dependencies
 npm install
-```
 
-3. 开发环境运行
-```bash
+# Start development server
 npm run dev
-```
 
-4. 构建生产版本
-```bash
+# Build for production
 npm run build
 ```
 
-5. 预览生产构建
+## 📁 Project Structure
+
+```
+richardfury.github.io/
+├── src/
+│   ├── components/          # Vue components
+│   │   ├── HomePage/       # Home page components
+│   │   ├── BlogPage/       # Blog page components
+│   │   ├── CVPage/         # CV page components
+│   │   ├── ResearchPage/    # Research page components
+│   │   ├── GalleryPage/     # Gallery page components
+│   │   ├── ContactPage/     # Contact page components
+│   │   ├── AnalyticsPage/   # Analytics dashboard components
+│   │   ├── TheHeader.vue    # Main header component
+│   │   └── TheFooter.vue    # Main footer component
+│   ├── styles/            # CSS styles
+│   │   ├── style.css       # Global styles
+│   │   ├── analytics.css   # Analytics dashboard styles
+│   │   └── minimalist.css  # Minimalist utility classes
+│   ├── data/              # Data files
+│   ├── services/          # Service files
+│   ├── utils/             # Utility functions
+│   ├── App.vue            # Root component
+│   └── main.js            # Entry point
+├── public/               # Static assets
+├── .github/              # GitHub workflows
+└── package.json          # Project dependencies
+```
+
+## 🎨 Design System
+
+### Colors
+
+**Dark Theme**:
+- Background: `#0a0a0a` (primary), `#141414` (secondary), `#1f1f1f` (tertiary)
+- Text: `#f5f5f5` (primary), `#a1a1aa` (secondary), `#71717a` (tertiary)
+- Accent: `#404040` (primary), `#737373` (secondary), `#a3a3a3` (tertiary)
+
+**Light Theme**:
+- Background: `#ffffff` (primary), `#f8f9fa` (secondary), `#f0f1f3` (tertiary)
+- Text: `#1a1a1a` (primary), `#6b7280` (secondary), `#9ca3af` (tertiary)
+- Accent: `#404040` (primary), `#737373` (secondary), `#a3a3a3` (tertiary)
+
+### Typography
+
+- **Font Family**: Playfair Display (headings), Inter (body)
+- **Font Sizes**: 0.875rem - 4.5rem
+- **Line Heights**: 1.4 - 2.0
+- **Letter Spacing**: -0.02em to 0.05em
+
+### Spacing
+
+- **Base Unit**: 0.25rem (4px)
+- **Scale**: 1x, 2x, 3x, 4x, 5x, 6x, 8x, 10x, 12x, 16x, 20x, 24x
+
+### Breakpoints
+
+- **Mobile**: < 480px
+- **Mobile-L**: 480px - 767px
+- **Tablet**: 768px - 1023px
+- **Desktop**: 1024px - 1439px
+- **Large**: ≥ 1440px
+
+## 📄 Pages
+
+### Home Page
+- Hero section with carousel
+- Concepts section
+- Works preview section
+- Contact section
+
+### CV Page
+- Professional experience
+- Education
+- Skills
+- Projects
+
+### Blog Page
+- Blog post list
+- Blog post detail
+- Comments section
+- Nested replies
+
+### Research Page
+- Research publications
+- Visualizations
+- Papers
+
+### Gallery Page
+- Photo gallery
+- Image modal
+- Camera parameters
+
+### Contact Page
+- Contact form
+- Contact information
+- Social links
+
+### Analytics Dashboard
+- Password-protected login
+- World map visualization
+- Access statistics
+- User behavior analysis
+- Device analysis
+- Page ranking
+- Geographic analysis
+
+## 🔐 Analytics Dashboard
+
+The analytics dashboard is a hidden page accessible at `/analytics` with password protection.
+
+**Default Password**: `RichardFury2026`
+
+**Features**:
+- World map with visitor locations
+- Access statistics (PV, UV, duration, bounce rate)
+- User behavior analysis
+- Device information
+- Page ranking
+- Geographic analysis
+
+**Security**:
+- bcrypt password hashing
+- JWT token authentication
+- Route guards
+- Attempt limiting
+
+## 🎯 Development
+
 ```bash
+# Start development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Preview production build
 npm run preview
 ```
 
-## 📝 博客功能使用
+## 📦 Scripts
 
-### 添加新博客文章
+- `npm run dev` - Start development server
+- `npm run build` - Build for production
+- `npm run preview` - Preview production build
 
-1. 在 `src/data/blog/` 目录下创建新的Markdown文件
-2. 使用以下格式添加文章内容：
-```markdown
----
-title: 文章标题
-date: 2024-01-01
-category: 分类
-tags: [标签1, 标签2]
----
+## 📝 License
 
-这里是文章内容...
-```
+MIT License - see [LICENSE](LICENSE) file for details
 
-### 评论系统
-
-评论系统使用IndexedDB在浏览器端进行持久化存储，确保页面刷新后评论不会丢失。
-
-## 🎨 主题定制
-
-网站支持自动跟随系统主题设置，也可以手动切换明暗主题。主题样式定义在全局CSS变量中，可以在`style.css`中进行自定义。
-
-## 📄 许可证
-
-本项目采用MIT许可证 - 查看 <mcfile name="LICENSE" path="/Users/storm/Codespace/newprofile/LICENSE"></mcfile> 文件了解详情
-
-## 👨‍💻 作者
+## 👤 Author
 
 Richard Fury
+
+## 🙏 Acknowledgments
+
+- Vue.js team for the amazing framework
+- Vite team for the build tool
+- ECharts team for the charting library
+- Leaflet team for the mapping library
+- All other open-source contributors
+
+---
+
+**Last Updated**: 2026-01-18
