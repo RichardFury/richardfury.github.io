@@ -4,8 +4,9 @@ import vue from '@vitejs/plugin-vue'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  // GitHub Pages 配置，base路径为仓库名称
-  base: '/richardfury.github.io/',
+  // GitHub Pages 配置
+  // 对于用户名.github.io类型的仓库，base路径为根目录
+  base: '/',
   server: {
     port: 3000,
     open: true
