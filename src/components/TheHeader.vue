@@ -69,8 +69,10 @@ onUnmounted(() => {
     <div class="container">
       <div class="nav-content">
         <!-- Logo -->
-        <div class="nav-logo" @click="navigateTo('/')">
-          <h1 class="logo-text">Richard Fury</h1>
+        <div class="nav-logo">
+          <router-link to="/" class="logo-link">
+            <h1 class="logo-text">Richard Fury</h1>
+          </router-link>
         </div>
         
         <!-- 桌面导航 -->
@@ -81,14 +83,14 @@ onUnmounted(() => {
               :key="link.path"
               class="nav-item"
             >
-              <a 
-                :href="link.path"
-                @click.prevent="navigateTo(link.path)"
+              <router-link
+                :to="link.path"
+                @click="isMobileMenuOpen = false"
                 :class="{ 'nav-link-active': activeNavItem === link.path }"
                 class="nav-link"
               >
                 {{ link.name }}
-              </a>
+              </router-link>
             </li>
           </ul>
         </nav>
@@ -114,27 +116,27 @@ onUnmounted(() => {
       </div>
       
       <!-- 移动导航菜单 -->
-      <div 
-        v-if="isMobileMenuOpen"
-        class="nav-mobile glass-effect"
-      >
-        <ul class="nav-list-mobile">
-          <li 
-            v-for="link in navLinks" 
-            :key="link.path"
-            class="nav-item-mobile"
-          >
-            <a 
-              :href="link.path"
-              @click.prevent="navigateTo(link.path)"
-              :class="{ 'nav-link-active': activeNavItem === link.path }"
-              class="nav-link-mobile"
+        <div 
+          v-if="isMobileMenuOpen"
+          class="nav-mobile glass-effect"
+        >
+          <ul class="nav-list-mobile">
+            <li 
+              v-for="link in navLinks" 
+              :key="link.path"
+              class="nav-item-mobile"
             >
-              {{ link.name }}
-            </a>
-          </li>
-        </ul>
-      </div>
+              <router-link
+                :to="link.path"
+                @click="isMobileMenuOpen = false"
+                :class="{ 'nav-link-active': activeNavItem === link.path }"
+                class="nav-link-mobile"
+              >
+                {{ link.name }}
+              </router-link>
+            </li>
+          </ul>
+        </div>
     </div>
   </header>
 </template>
