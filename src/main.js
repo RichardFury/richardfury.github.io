@@ -1,5 +1,5 @@
 import { createApp } from 'vue'
-import { createRouter, createWebHistory } from 'vue-router'
+import { createRouter, createWebHashHistory } from 'vue-router'
 import App from './App.vue'
 import './style.css'
 import './styles/hero-variables.css'
@@ -16,8 +16,9 @@ import LoginPage from './components/AnalyticsPage/LoginPage.vue'
 import NotFoundPage from './components/NotFoundPage.vue'
 
 // 创建路由实例
+// 使用 createWebHashHistory 而不是 createWebHistory 以支持 GitHub Pages
 const router = createRouter({
-  history: createWebHistory(import.meta.env.BASE_URL),
+  history: createWebHashHistory(),
   routes: [
     { path: '/', component: HomePage, name: 'home' },
     { path: '/cv', redirect: '/', name: 'cv' },
