@@ -1,12 +1,4 @@
-import MarkdownIt from 'markdown-it';
-
-// 创建Markdown实例
-const md = new MarkdownIt({
-  html: true,
-  breaks: true,
-  linkify: true,
-  typographer: true
-});
+import { renderMarkdown } from './MarkdownRenderer';
 
 /**
  * 处理Markdown内容，将其转换为HTML
@@ -25,7 +17,7 @@ export function processMarkdown(markdown) {
     content = content.substring(match[0].length);
   }
   
-  return md.render(content);
+  return renderMarkdown(content);
 }
 
 /**
@@ -37,7 +29,7 @@ export function processMarkdown(markdown) {
 export function extractExcerpt(markdown, length = 150) {
   if (!markdown) return '';
   // 先移除Markdown标签
-  const html = md.render(markdown);
+  const html = renderMarkdown(markdown);
   const text = html.replace(/<[^>]*>/g, '');
   // 截取指定长度并添加省略号
   return text.length > length ? text.substring(0, length) + '...' : text;

@@ -5,6 +5,7 @@
  */
 
 import initSqlJs from 'sql.js';
+import { logger } from '../utils/logger';
 
 class SQLiteCommentService {
   constructor() {

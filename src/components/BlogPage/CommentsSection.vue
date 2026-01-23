@@ -165,37 +165,35 @@ const topLevelComments = computed(() => {
   return comments.value.filter(c => c.parent_id === null);
 });
 
+// ESC键处理函数
+const handleEscKey = (event) => {
+  if (event.key === 'Escape') {
+    // 如果正在回复，隐藏回复表单
+    if (replyingTo.value !== null) {
+      cancelReply();
+    }
+    // 如果显示了主评论表单，隐藏主评论表单
+    else if (showForm.value) {
+      showForm.value = false;
+    }
+  }
+};
+
+// 在setup顶层注册生命周期钩子
 onMounted(async () => {
   // 初始化CommentService
   await CommentService.init();
-
-  // 从外部JSON文件同步评论（如果存在）
-  const syncResult = await CommentService.syncFromJsonFile();
-  logger.info('评论同步结果:', syncResult);
-
+  
   // 加载当前评论
   await loadComments();
-
-  // 添加ESC键监听，用于隐藏回复表单和主评论表单
-  const handleEscKey = (event) => {
-    if (event.key === 'Escape') {
-      // 如果正在回复，隐藏回复表单
-      if (replyingTo.value !== null) {
-        cancelReply();
-      }
-      // 如果显示了主评论表单，隐藏主评论表单
-      else if (showForm.value) {
-        showForm.value = false;
-      }
-    }
-  };
-
+  
+  // 添加ESC键监听
   window.addEventListener('keydown', handleEscKey);
+});
 
-  // 组件卸载时移除事件监听
-  onUnmounted(() => {
-    window.removeEventListener('keydown', handleEscKey);
-  });
+// 组件卸载时移除事件监听
+onUnmounted(() => {
+  window.removeEventListener('keydown', handleEscKey);
 });
 </script>
 

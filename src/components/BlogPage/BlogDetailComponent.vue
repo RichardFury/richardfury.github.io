@@ -5,6 +5,7 @@ import { processMarkdown } from '../../utils/markdownProcessor';
 import { useBlogPosts } from '../../composables/useBlogPosts';
 import CommentsSection from './CommentsSection.vue';
 import { logger } from '../../utils/logger';
+import '../../styles/MarkdownTheme.css';
 
 const route = useRoute();
 const postId = route.params.id;

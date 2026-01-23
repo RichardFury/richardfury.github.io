@@ -1,6 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useBlogPosts } from '../../composables/useBlogPosts';
+import { logger } from '../../utils/logger';
 
 const { blogPosts, loading, error, fetchBlogPosts } = useBlogPosts();
 
@@ -33,8 +34,14 @@ function goToPage(page) {
   currentPage.value = page;
 }
 
+function handleReadMore(postId) {
+  logger.debug('[BlogPage] Read More clicked for post ID:', postId);
+  logger.debug('[BlogPage] Post object:', postId);
+}
+
 onMounted(() => {
   fetchBlogPosts();
+  logger.debug('[BlogPage] Blog posts loaded:', blogPosts.value.length);
 });
 </script>
 
@@ -82,7 +89,7 @@ onMounted(() => {
               <h2 class="blog-post-title">{{ post.title }}</h2>
               <p class="blog-post-excerpt">{{ post.excerpt }}</p>
               <div class="blog-post-footer">
-                <router-link :to="`/blog/${post.id}`" class="btn btn-secondary">Read More</router-link>
+                <router-link :to="`/blog/${post.id}`" class="btn btn-secondary" @click="handleReadMore(post.id)">Read More</router-link>
               </div>
             </div>
           </article>

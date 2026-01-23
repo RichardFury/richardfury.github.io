@@ -6,21 +6,15 @@ class Logger {
   }
 
   debug(...args) {
-    if (this.isDevelopment) {
-      console.log('[DEBUG]', ...args);
-    }
+    console.log('[DEBUG]', ...args);
   }
 
   log(...args) {
-    if (this.isDevelopment) {
-      console.log('[LOG]', ...args);
-    }
+    console.log('[LOG]', ...args);
   }
 
   info(...args) {
-    if (this.isDevelopment || this.logLevel === 'info') {
-      console.info('[INFO]', ...args);
-    }
+    console.info('[INFO]', ...args);
   }
 
   warn(...args) {
@@ -32,27 +26,19 @@ class Logger {
   }
 
   group(label) {
-    if (this.isDevelopment) {
-      console.group(label);
-    }
+    console.group(label);
   }
 
   groupEnd() {
-    if (this.isDevelopment) {
-      console.groupEnd();
-    }
+    console.groupEnd();
   }
 
   time(label) {
-    if (this.isDevelopment) {
-      console.time(label);
-    }
+    console.time(label);
   }
 
   timeEnd(label) {
-    if (this.isDevelopment) {
-      console.timeEnd(label);
-    }
+    console.timeEnd(label);
   }
 }
 
