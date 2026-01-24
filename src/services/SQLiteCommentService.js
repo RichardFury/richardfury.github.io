@@ -18,6 +18,10 @@ class SQLiteCommentService {
     this.pendingWrites = []
     this.maxPendingWrites = 50
     this.isSyncing = false
+    this.syncInterval = 60000 // 1分钟同步一次
+    this.syncTimer = null
+    this.dbFileName = 'comments.db'
+    this.dbFilePath = `/src/database/${this.dbFileName}`
   }
 
   /**
@@ -44,6 +48,12 @@ class SQLiteCommentService {
       // 初始化表结构
       await this.initializeSchema()
 
+      // 第一次启动时，确保数据从数据库同步到localStorage
+      await this.syncToLocalStorage()
+
+      // 启动定期同步
+      this.startSync()
+
       this.isInitialized = true
       logger.info('[SQLiteCommentService] 初始化成功')
     } catch (error) {
@@ -53,26 +63,110 @@ class SQLiteCommentService {
   }
 
   /**
+   * 启动定期同步
+   */
+  startSync() {
+    this.syncTimer = setInterval(() => {
+      this.syncToLocalStorage()
+    }, this.syncInterval)
+  }
+
+  /**
+   * 停止定期同步
+   */
+  stopSync() {
+    if (this.syncTimer) {
+      clearInterval(this.syncTimer)
+      this.syncTimer = null
+    }
+  }
+
+  /**
+   * 将数据库数据同步到localStorage
+   * 确保首次启动时数据从数据库加载到localStorage
+   * @returns {Promise<void>}
+   */
+  async syncToLocalStorage() {
+    try {
+      logger.info('[SQLiteCommentService] 开始从数据库同步到localStorage...')
+      
+      // 导出数据库到localStorage
+      await this.saveDatabase()
+      
+      logger.info('[SQLiteCommentService] 数据库同步到localStorage成功')
+    } catch (error) {
+      logger.error('[SQLiteCommentService] 从数据库同步到localStorage失败:', error)
+    }
+  }
+
+  /**
    * 加载数据库
    * @returns {Promise<void>}
    */
   async loadDatabase() {
     try {
-      // 尝试从localStorage加载数据库
+      // 1. 优先从localStorage加载数据库（保持原有逻辑）
       const savedDb = localStorage.getItem(this.localStorageKey)
       if (savedDb) {
         const uint8Array = new Uint8Array(JSON.parse(savedDb))
         this.db = new this.SQL.Database(uint8Array)
         logger.info('[SQLiteCommentService] 从localStorage加载数据库成功')
-      } else {
-        // 创建新数据库
-        this.db = new this.SQL.Database()
-        logger.info('[SQLiteCommentService] 创建新数据库成功')
+        return
+      }
+      
+      // 2. 尝试从静态资源加载数据库文件
+      try {
+        const response = await fetch(this.dbFilePath)
+        if (response.ok) {
+          const arrayBuffer = await response.arrayBuffer()
+          const uint8Array = new Uint8Array(arrayBuffer)
+          this.db = new this.SQL.Database(uint8Array)
+          logger.info('[SQLiteCommentService] 从静态资源加载数据库成功')
+          return
+        }
+      } catch (fetchError) {
+        logger.warn('[SQLiteCommentService] 从静态资源加载数据库失败:', fetchError)
+      }
+      
+      // 3. 如果以上都失败，创建新数据库
+      this.db = new this.SQL.Database()
+      logger.info('[SQLiteCommentService] 创建新数据库成功')
+      
+      // 4. 初始化完成后，将新数据库保存到localStorage，方便开发者手动下载
+      if (import.meta.env.DEV) {
+        await this.exportDatabaseToLocalStorage()
       }
     } catch (error) {
       logger.error('[SQLiteCommentService] 加载数据库失败:', error)
       // 如果加载失败，创建新数据库
       this.db = new this.SQL.Database()
+    }
+  }
+
+  /**
+   * 将数据库导出到localStorage
+   * 仅在开发环境下使用，用于初始化数据库文件
+   * @returns {Promise<void>}
+   */
+  async exportDatabaseToLocalStorage() {
+    try {
+      // 仅在开发环境下执行
+      if (!import.meta.env.DEV) {
+        return
+      }
+      
+      // 导出数据库为二进制数据
+      const data = this.db.export()
+      const array = Array.from(data)
+      
+      logger.info('[SQLiteCommentService] 数据库导出到localStorage，可通过开发工具手动保存到文件系统')
+      logger.info('[SQLiteCommentService] 导出数据大小:', (data.byteLength / 1024).toFixed(2), 'KB')
+      
+      // 在浏览器环境下，我们无法直接写入文件系统
+      // 但可以将数据保存到localStorage，方便开发者手动下载
+      localStorage.setItem('comments_db_export', JSON.stringify(array))
+    } catch (error) {
+      logger.error('[SQLiteCommentService] 导出数据库失败:', error)
     }
   }
 
@@ -701,6 +795,9 @@ class SQLiteCommentService {
    * @returns {Promise<void>}
    */
   async destroy() {
+    // 停止同步定时器
+    this.stopSync()
+    
     if (this.db) {
       // 保存数据库
       await this.saveDatabase()

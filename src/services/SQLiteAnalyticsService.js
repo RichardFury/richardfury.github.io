@@ -18,8 +18,8 @@ class SQLiteAnalyticsService {
     this.isInitialized = false
     this.sessionId = this.generateSessionId()
     this.localStorageKey = 'analytics_cache'
-    this.dataDir = '/data'
-    this.dbFilePath = `${this.dataDir}/analytics.db`
+    this.dbFileName = 'analytics.db'
+    this.dbFilePath = `/src/database/${this.dbFileName}`
     this.pendingWrites = [] // 待写入的数据队列
     this.maxPendingWrites = 100 // 最大待写入数量
     this.isSyncing = false
@@ -46,6 +46,9 @@ class SQLiteAnalyticsService {
       // 初始化表结构
       await this.initializeSchema()
 
+      // 第一次启动时，确保数据从数据库同步到localStorage
+      await this.syncToLocalStorage()
+
       // 加载localStorage缓存
       await this.loadFromLocalStorage()
 
@@ -62,21 +65,68 @@ class SQLiteAnalyticsService {
 
   async loadDatabase() {
     try {
-      // 尝试从localStorage加载数据库
+      // 1. 优先从localStorage加载数据库（保持原有逻辑）
       const savedDb = localStorage.getItem('analytics_db')
       if (savedDb) {
         const uint8Array = new Uint8Array(JSON.parse(savedDb))
         this.db = new this.SQL.Database(uint8Array)
         logger.info('[SQLiteAnalytics] 从localStorage加载数据库成功')
-      } else {
-        // 创建新数据库
-        this.db = new this.SQL.Database()
-        logger.info('[SQLiteAnalytics] 创建新数据库成功')
+        return
+      }
+      
+      // 2. 尝试从静态资源加载数据库文件
+      try {
+        const response = await fetch(this.dbFilePath)
+        if (response.ok) {
+          const arrayBuffer = await response.arrayBuffer()
+          const uint8Array = new Uint8Array(arrayBuffer)
+          this.db = new this.SQL.Database(uint8Array)
+          logger.info('[SQLiteAnalytics] 从静态资源加载数据库成功')
+          return
+        }
+      } catch (fetchError) {
+        logger.warn('[SQLiteAnalytics] 从静态资源加载数据库失败:', fetchError)
+      }
+      
+      // 3. 如果以上都失败，创建新数据库
+      this.db = new this.SQL.Database()
+      logger.info('[SQLiteAnalytics] 创建新数据库成功')
+      
+      // 4. 初始化完成后，将新数据库保存到静态资源（仅在开发环境下）
+      if (import.meta.env.DEV) {
+        await this.exportDatabaseToStaticResource()
       }
     } catch (error) {
       logger.error('[SQLiteAnalytics] 加载数据库失败:', error)
       // 如果加载失败，创建新数据库
       this.db = new this.SQL.Database()
+    }
+  }
+
+  /**
+   * 将数据库导出到静态资源文件
+   * 仅在开发环境下使用，用于初始化数据库文件
+   * @returns {Promise<void>}
+   */
+  async exportDatabaseToStaticResource() {
+    try {
+      // 仅在开发环境下执行
+      if (!import.meta.env.DEV) {
+        return
+      }
+      
+      // 导出数据库为二进制数据
+      const data = this.db.export()
+      const array = Array.from(data)
+      
+      logger.info('[SQLiteAnalytics] 数据库导出到localStorage，可通过开发工具手动保存到文件系统')
+      logger.info('[SQLiteAnalytics] 导出数据大小:', (data.byteLength / 1024).toFixed(2), 'KB')
+      
+      // 在浏览器环境下，我们无法直接写入文件系统
+      // 但可以将数据保存到localStorage，方便开发者手动下载
+      localStorage.setItem('analytics_db_export', JSON.stringify(array))
+    } catch (error) {
+      logger.error('[SQLiteAnalytics] 导出数据库到静态资源失败:', error)
     }
   }
 
@@ -303,6 +353,11 @@ class SQLiteAnalyticsService {
     const { table, data } = write
 
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const stmt = this.db.prepare(`
         INSERT OR REPLACE INTO ${table} (
           id, timestamp, session_id, ${Object.keys(data).join(', ')}
@@ -329,6 +384,27 @@ class SQLiteAnalyticsService {
       await this.saveToLocalStorage(summary)
     } catch (error) {
       logger.error('[SQLiteAnalytics] 同步摘要失败:', error)
+    }
+  }
+
+  /**
+   * 将数据库数据同步到localStorage
+   * 确保首次启动时数据从数据库加载到localStorage
+   * @returns {Promise<void>}
+   */
+  async syncToLocalStorage() {
+    try {
+      logger.info('[SQLiteAnalytics] 开始从数据库同步到localStorage...')
+      
+      // 1. 导出数据库到localStorage
+      await this.saveDatabase()
+      
+      // 2. 同步摘要数据到localStorage
+      await this.syncSummary()
+      
+      logger.info('[SQLiteAnalytics] 数据库同步到localStorage成功')
+    } catch (error) {
+      logger.error('[SQLiteAnalytics] 从数据库同步到localStorage失败:', error)
     }
   }
 
@@ -463,6 +539,11 @@ class SQLiteAnalyticsService {
 
   async getVisits() {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init()
+      }
+      
       const stmt = this.db.prepare('SELECT * FROM visits ORDER BY timestamp DESC')
       
       // 获取所有结果
@@ -481,6 +562,11 @@ class SQLiteAnalyticsService {
 
   async getEvents() {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const stmt = this.db.prepare('SELECT * FROM events ORDER BY timestamp DESC')
       const events = []
       
@@ -503,6 +589,11 @@ class SQLiteAnalyticsService {
   
   async getEventsByTimeRange(timeRange = 'all') {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const now = Date.now()
       const dayAgo = now - 24 * 60 * 60 * 1000
       const weekAgo = now - 7 * 24 * 60 * 60 * 1000
@@ -555,6 +646,11 @@ class SQLiteAnalyticsService {
 
   async getDevices() {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const stmt = this.db.prepare('SELECT * FROM devices ORDER BY timestamp DESC')
       const devices = []
       
@@ -572,6 +668,11 @@ class SQLiteAnalyticsService {
   
   async getDevicesByTimeRange(timeRange = 'all') {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const now = Date.now()
       const dayAgo = now - 24 * 60 * 60 * 1000
       const weekAgo = now - 7 * 24 * 60 * 60 * 1000
@@ -619,6 +720,11 @@ class SQLiteAnalyticsService {
 
   async getGeos() {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const stmt = this.db.prepare('SELECT * FROM geos ORDER BY timestamp DESC')
       const geos = []
       
@@ -636,6 +742,11 @@ class SQLiteAnalyticsService {
   
   async getGeosByTimeRange(timeRange = 'all') {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const now = Date.now()
       const dayAgo = now - 24 * 60 * 60 * 1000
       const weekAgo = now - 7 * 24 * 60 * 60 * 1000
@@ -683,6 +794,11 @@ class SQLiteAnalyticsService {
 
   async getVisitsByTimestampRange(startTime, endTime) {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       // 参数验证
       if (startTime === undefined || endTime === undefined) {
         logger.error('[SQLiteAnalytics] getVisitsByTimestampRange: 缺少必需参数 startTime 或 endTime')
@@ -711,6 +827,11 @@ class SQLiteAnalyticsService {
   
   async getVisitsByTimeRange(timeRange = 'all') {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const now = Date.now()
       const dayAgo = now - 24 * 60 * 60 * 1000
       const weekAgo = now - 7 * 24 * 60 * 60 * 1000
@@ -758,6 +879,11 @@ class SQLiteAnalyticsService {
 
   async getEventsByType(type) {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       const stmt = this.db.prepare(`
         SELECT * FROM events
         WHERE type = ?
@@ -784,6 +910,11 @@ class SQLiteAnalyticsService {
 
   async getEventsByTimestampRange(startTime, endTime) {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       // 参数验证
       if (startTime === undefined || endTime === undefined) {
         logger.error('[SQLiteAnalytics] getEventsByTimestampRange: 缺少必需参数 startTime 或 endTime')
@@ -837,10 +968,100 @@ class SQLiteAnalyticsService {
     const weekEvents = events.filter(e => e.timestamp >= weekAgo)
     const monthEvents = events.filter(e => e.timestamp >= monthAgo)
 
+    // 计算总访问量：同一用户在同一会话期间多次访问同一页面只会被计数一次
+    const calculateUniqueVisits = (visitList) => {
+      const sessionPageVisits = new Map()
+      let totalVisits = 0
+      
+      visitList.forEach(v => {
+        if (!sessionPageVisits.has(v.session_id)) {
+          sessionPageVisits.set(v.session_id, new Set())
+        }
+        const sessionVisitedPages = sessionPageVisits.get(v.session_id)
+        
+        if (!sessionVisitedPages.has(v.path)) {
+          totalVisits++
+          sessionVisitedPages.add(v.path)
+        }
+      })
+      
+      return totalVisits
+    }
+
+    // 计算独立访客（UV）：同一用户24小时内多次访问仅计为1次
+    // 基于IP地址+UserAgent+屏幕尺寸作为用户标识
+    const calculateUniqueVisitors = (visitList) => {
+      // 按session_id分组，获取每个session的用户标识
+      const sessionUserMap = new Map()
+      
+      // 构建session到设备信息的映射
+      const deviceMap = new Map()
+      devices.forEach(d => {
+        deviceMap.set(d.session_id, d)
+      })
+      
+      // 构建session到地理信息的映射
+      const geoMap = new Map()
+      geos.forEach(g => {
+        geoMap.set(g.session_id, g)
+      })
+      
+      // 为每个session生成唯一用户标识
+      visitList.forEach(v => {
+        if (!sessionUserMap.has(v.session_id)) {
+          const device = deviceMap.get(v.session_id) || {}
+          const geo = geoMap.get(v.session_id) || {}
+          
+          // 基于IP+UserAgent+屏幕尺寸生成用户标识
+          const userIdentifier = `${geo.ip_address || ''}|${device.user_agent || ''}|${device.screen_width || ''}x${device.screen_height || ''}`
+          sessionUserMap.set(v.session_id, {
+            userIdentifier,
+            timestamp: v.timestamp
+          })
+        }
+      })
+      
+      // 按24小时时间段分组，统计每个时间段内的唯一用户数
+      const dailyUsers = new Map()
+      sessionUserMap.forEach((sessionData, sessionId) => {
+        // 将时间戳转换为24小时起始时间（当天0点）
+        const dayStart = new Date(sessionData.timestamp)
+        dayStart.setHours(0, 0, 0, 0)
+        const dayKey = dayStart.getTime()
+        
+        if (!dailyUsers.has(dayKey)) {
+          dailyUsers.set(dayKey, new Set())
+        }
+        dailyUsers.get(dayKey).add(sessionData.userIdentifier)
+      })
+      
+      // 统计总UV：每个24小时时间段内的唯一用户数之和
+      let totalUV = 0
+      dailyUsers.forEach(users => {
+        totalUV += users.size
+      })
+      
+      return totalUV
+    }
+
+    // 计算会话数
     const uniqueSessions = new Set(visits.map(v => v.session_id)).size
     const todayUniqueSessions = new Set(todayVisits.map(v => v.session_id)).size
     const weekUniqueSessions = new Set(weekVisits.map(v => v.session_id)).size
     const monthUniqueSessions = new Set(monthVisits.map(v => v.session_id)).size
+    
+    // 计算UV
+    const uniqueVisitors = calculateUniqueVisitors(visits)
+    const todayUniqueVisitors = calculateUniqueVisitors(todayVisits)
+    const weekUniqueVisitors = calculateUniqueVisitors(weekVisits)
+    const monthUniqueVisitors = calculateUniqueVisitors(monthVisits)
+    
+    // 使用新的访问量计算方式
+    const totalVisits = calculateUniqueVisits(visits)
+    const totalTodayVisits = calculateUniqueVisits(todayVisits)
+    const totalWeekVisits = calculateUniqueVisits(weekVisits)
+    const totalMonthVisits = calculateUniqueVisits(monthVisits)
+    
     const totalDuration = visits.reduce((sum, v) => sum + (v.duration || 0), 0)
     const avgDuration = uniqueSessions > 0 ? totalDuration / uniqueSessions : 0
     const bounceRate = this.calculateBounceRate(visits)
@@ -851,24 +1072,24 @@ class SQLiteAnalyticsService {
 
     return {
       total: {
-        visits: visits.length,
+        visits: totalVisits,
         uniqueVisitors: uniqueSessions,
         events: events.length,
         avgDuration: Math.round(avgDuration),
         bounceRate: bounceRate
       },
       today: {
-        visits: todayVisits.length,
+        visits: totalTodayVisits,
         uniqueVisitors: todayUniqueSessions,
         events: todayEvents.length
       },
       week: {
-        visits: weekVisits.length,
+        visits: totalWeekVisits,
         uniqueVisitors: weekUniqueSessions,
         events: weekEvents.length
       },
       month: {
-        visits: monthVisits.length,
+        visits: totalMonthVisits,
         uniqueVisitors: monthUniqueSessions,
         events: monthEvents.length
       },
@@ -902,13 +1123,28 @@ class SQLiteAnalyticsService {
   calculatePageRanking(visits) {
     const pageStats = new Map()
     const sessionPages = new Map()
+    // 用于跟踪每个会话访问的页面，确保同一会话多次访问同一页面只计数一次
+    const sessionPageVisits = new Map()
 
     visits.forEach(v => {
+      // 初始化会话数据
+      if (!sessionPageVisits.has(v.session_id)) {
+        sessionPageVisits.set(v.session_id, new Set())
+      }
+      const sessionVisitedPages = sessionPageVisits.get(v.session_id)
+      
+      // 初始化页面统计
       if (!pageStats.has(v.path)) {
         pageStats.set(v.path, { visits: 0, totalDuration: 0, uniqueSessions: new Set() })
       }
       const stats = pageStats.get(v.path)
-      stats.visits++
+      
+      // 同一会话多次访问同一页面只计数一次
+      if (!sessionVisitedPages.has(v.path)) {
+        stats.visits++
+        sessionVisitedPages.add(v.path)
+      }
+      
       stats.totalDuration += v.duration || 0
       stats.uniqueSessions.add(v.session_id)
 
@@ -994,32 +1230,69 @@ class SQLiteAnalyticsService {
   }
 
   calculateGeoStats(geos) {
+    // 使用新的访问量计算方式：同一用户在同一会话期间多次访问同一地区只计数一次
+    const sessionCountryVisits = new Map()
+    const sessionCityVisits = new Map()
+    const sessionLanguageVisits = new Map()
+    const sessionTimezoneVisits = new Map()
+    
+    // 用于存储最终统计结果
     const countries = new Map()
     const cities = new Map()
     const languages = new Map()
     const timezones = new Map()
 
     geos.forEach(g => {
-      if (g.country) {
+      // 初始化会话数据
+      if (!sessionCountryVisits.has(g.session_id)) {
+        sessionCountryVisits.set(g.session_id, new Set())
+      }
+      if (!sessionCityVisits.has(g.session_id)) {
+        sessionCityVisits.set(g.session_id, new Set())
+      }
+      if (!sessionLanguageVisits.has(g.session_id)) {
+        sessionLanguageVisits.set(g.session_id, new Set())
+      }
+      if (!sessionTimezoneVisits.has(g.session_id)) {
+        sessionTimezoneVisits.set(g.session_id, new Set())
+      }
+      
+      const sessionCountries = sessionCountryVisits.get(g.session_id)
+      const sessionCities = sessionCityVisits.get(g.session_id)
+      const sessionLanguages = sessionLanguageVisits.get(g.session_id)
+      const sessionTimezones = sessionTimezoneVisits.get(g.session_id)
+      
+      // 国家统计：同一会话多次访问同一国家只计数一次
+      if (g.country && !sessionCountries.has(g.country)) {
         countries.set(g.country, {
           count: (countries.get(g.country)?.count || 0) + 1,
           latitude: g.latitude,
           longitude: g.longitude
         })
+        sessionCountries.add(g.country)
       }
-      if (g.city) {
+      
+      // 城市统计：同一会话多次访问同一城市只计数一次
+      if (g.city && !sessionCities.has(g.city)) {
         cities.set(g.city, {
           count: (cities.get(g.city)?.count || 0) + 1,
           country: g.country,
           latitude: g.latitude,
           longitude: g.longitude
         })
+        sessionCities.add(g.city)
       }
-      if (g.language) {
+      
+      // 语言统计：同一会话多次访问同一语言地区只计数一次
+      if (g.language && !sessionLanguages.has(g.language)) {
         languages.set(g.language, (languages.get(g.language) || 0) + 1)
+        sessionLanguages.add(g.language)
       }
-      if (g.timezone) {
+      
+      // 时区统计：同一会话多次访问同时区只计数一次
+      if (g.timezone && !sessionTimezones.has(g.timezone)) {
         timezones.set(g.timezone, (timezones.get(g.timezone) || 0) + 1)
+        sessionTimezones.add(g.timezone)
       }
     })
 
@@ -1118,6 +1391,27 @@ class SQLiteAnalyticsService {
     const labels = []
     const values = []
 
+    // 计算每日访问量：同一用户在同一会话期间多次访问同一页面只会被计数一次
+    const calculateDailyVisits = (dayStart, dayEnd) => {
+      const dayVisits = visits.filter(v => v.timestamp >= dayStart && v.timestamp < dayEnd)
+      const sessionPageVisits = new Map()
+      let dailyVisits = 0
+      
+      dayVisits.forEach(v => {
+        if (!sessionPageVisits.has(v.session_id)) {
+          sessionPageVisits.set(v.session_id, new Set())
+        }
+        const sessionVisitedPages = sessionPageVisits.get(v.session_id)
+        
+        if (!sessionVisitedPages.has(v.path)) {
+          dailyVisits++
+          sessionVisitedPages.add(v.path)
+        }
+      })
+      
+      return dailyVisits
+    }
+
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(now - i * 24 * 60 * 60 * 1000)
       const dateStr = date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })
@@ -1125,8 +1419,8 @@ class SQLiteAnalyticsService {
 
       const dayStart = new Date(date.setHours(0, 0, 0, 0)).getTime()
       const dayEnd = dayStart + 24 * 60 * 60 * 1000
-      const dayVisits = visits.filter(v => v.timestamp >= dayStart && v.timestamp < dayEnd)
-      values.push(dayVisits.length)
+      const dailyVisits = calculateDailyVisits(dayStart, dayEnd)
+      values.push(dailyVisits)
     }
 
     return { labels, values }
@@ -1138,6 +1432,27 @@ class SQLiteAnalyticsService {
     const labels = []
     const values = []
 
+    // 计算每日访问量：同一用户在同一会话期间多次访问同一页面只会被计数一次
+    const calculateDailyVisits = (dayStart, dayEnd) => {
+      const dayVisits = visits.filter(v => v.timestamp >= dayStart && v.timestamp < dayEnd)
+      const sessionPageVisits = new Map()
+      let dailyVisits = 0
+      
+      dayVisits.forEach(v => {
+        if (!sessionPageVisits.has(v.session_id)) {
+          sessionPageVisits.set(v.session_id, new Set())
+        }
+        const sessionVisitedPages = sessionPageVisits.get(v.session_id)
+        
+        if (!sessionVisitedPages.has(v.path)) {
+          dailyVisits++
+          sessionVisitedPages.add(v.path)
+        }
+      })
+      
+      return dailyVisits
+    }
+
     for (let i = days - 1; i >= 0; i--) {
       const date = new Date(now - i * 24 * 60 * 60 * 1000)
       const dateStr = date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' })
@@ -1146,9 +1461,12 @@ class SQLiteAnalyticsService {
       const dayStart = new Date(date.setHours(0, 0, 0, 0)).getTime()
       const dayEnd = dayStart + 24 * 60 * 60 * 1000
       const dayVisits = visits.filter(v => v.timestamp >= dayStart && v.timestamp < dayEnd)
-
+      
+      // 使用新的访问量计算方式
+      const dailyVisits = calculateDailyVisits(dayStart, dayEnd)
+      
       const totalDuration = dayVisits.reduce((sum, v) => sum + (v.duration || 0), 0)
-      const avgDuration = dayVisits.length > 0 ? Math.round(totalDuration / dayVisits.length) : 0
+      const avgDuration = dailyVisits > 0 ? Math.round(totalDuration / dailyVisits) : 0
       values.push(avgDuration)
     }
 
@@ -1378,10 +1696,7 @@ class SQLiteAnalyticsService {
     const visits = await this.getVisitsByTimeRange(timeRange)
     
     if (visits.length === 0) {
-      return {
-        nodes: [],
-        links: []
-      }
+      return { nodes: [], links: [] }
     }
     
     // 按session_id分组
@@ -1402,27 +1717,37 @@ class SQLiteAnalyticsService {
       // 按时间排序
       sessionVisitsList.sort((a, b) => a.timestamp - b.timestamp)
       
-      // 提取页面名称
-      const pages = sessionVisitsList.map(v => {
+      // 提取页面名称，并去重连续重复的页面（避免A→A→B这样的路径）
+      const pages = []
+      sessionVisitsList.forEach(v => {
         const path = v.path || 'unknown'
         const name = this.getPageName(path)
-        pageNames.set(name, true)
-        return name
+        // 只添加与上一个页面不同的页面
+        if (pages.length === 0 || pages[pages.length - 1] !== name) {
+          pages.push(name)
+          pageNames.set(name, true)
+        }
       })
       
-      // 统计页面跳转
+      // 统计页面跳转，确保没有循环（避免A→B→A这样的路径）
       for (let i = 0; i < pages.length - 1; i++) {
         const source = pages[i]
         const target = pages[i + 1]
-        const key = `${source}->${target}`
         
+        // 跳过自循环（A→A）
+        if (source === target) continue
+        
+        // 跳过直接循环（A→B→A）
+        if (i > 0 && pages[i - 1] === target) continue
+        
+        const key = `${source}->${target}`
         pathTransitions.set(key, (pathTransitions.get(key) || 0) + 1)
       }
     })
     
     // 转换为sankey图表数据格式
     const nodes = Array.from(pageNames.keys()).map(name => ({ name }))
-    const links = Array.from(pathTransitions.entries())
+    let links = Array.from(pathTransitions.entries())
       .map(([key, value]) => {
         const [source, target] = key.split('->')
         return { source, target, value }
@@ -1430,7 +1755,95 @@ class SQLiteAnalyticsService {
       .sort((a, b) => b.value - a.value)
       .slice(0, 20) // 只取前20个路径
     
+    // 进一步处理：检测并移除循环
+    links = this.removeCyclesFromLinks(links)
+    
     return { nodes, links }
+  }
+  
+  /**
+   * 从链接中移除循环，确保桑基图数据是DAG
+   * @param {Array} links - 原始链接数组
+   * @returns {Array} - 无循环的链接数组
+   */
+  removeCyclesFromLinks(links) {
+    // 构建邻接表
+    const adjacency = new Map()
+    const allNodes = new Set()
+    
+    // 初始化邻接表
+    links.forEach(link => {
+      allNodes.add(link.source)
+      allNodes.add(link.target)
+      
+      if (!adjacency.has(link.source)) {
+        adjacency.set(link.source, new Set())
+      }
+      adjacency.get(link.source).add(link.target)
+    })
+    
+    // 找出所有循环路径
+    const cycles = []
+    const visited = new Set()
+    const recStack = new Set()
+    const path = []
+    
+    // DFS检测循环
+    const detectCycle = (node) => {
+      if (!visited.has(node)) {
+        visited.add(node)
+        recStack.add(node)
+        path.push(node)
+        
+        const neighbors = adjacency.get(node) || []
+        for (const neighbor of neighbors) {
+          if (!visited.has(neighbor) && detectCycle(neighbor)) {
+            return true
+          } else if (recStack.has(neighbor)) {
+            // 找到循环，记录路径
+            const cycleStartIndex = path.indexOf(neighbor)
+            if (cycleStartIndex !== -1) {
+              cycles.push([...path.slice(cycleStartIndex), neighbor])
+            }
+            return true
+          }
+        }
+      }
+      
+      recStack.delete(node)
+      path.pop()
+      return false
+    }
+    
+    // 对所有节点执行DFS
+    for (const node of allNodes) {
+      detectCycle(node)
+    }
+    
+    // 如果没有循环，直接返回
+    if (cycles.length === 0) {
+      return links
+    }
+    
+    // 移除参与循环的链接，优先保留值大的链接
+    const linksToRemove = new Set()
+    
+    cycles.forEach(cycle => {
+      // 找到循环中的所有链接
+      for (let i = 0; i < cycle.length - 1; i++) {
+        const source = cycle[i]
+        const target = cycle[i + 1]
+        
+        // 找到对应的链接索引
+        const linkIndex = links.findIndex(link => link.source === source && link.target === target)
+        if (linkIndex !== -1) {
+          linksToRemove.add(linkIndex)
+        }
+      }
+    })
+    
+    // 移除参与循环的链接
+    return links.filter((_, index) => !linksToRemove.has(index))
   }
   
   getPageName(path) {
@@ -1568,6 +1981,11 @@ class SQLiteAnalyticsService {
 
   async clearData() {
     try {
+      // 确保数据库已初始化
+      if (!this.db) {
+        await this.init();
+      }
+      
       this.db.run('DELETE FROM visits')
       this.db.run('DELETE FROM events')
       this.db.run('DELETE FROM devices')

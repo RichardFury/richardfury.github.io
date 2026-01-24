@@ -230,35 +230,68 @@ const loadDeviceData = async () => {
 
     // 更新操作系统数据
     if (deviceStats.osTypes && deviceStats.osTypes.length > 0) {
-      deviceStats.osTypes.forEach((item, index) => {
-        if (index < osData.value.length) {
-          osData.value[index].value = item.value
-          osData.value[index].percent = item.percent
+      // 首先将所有操作系统的数值重置为0
+      osData.value.forEach(os => {
+        os.value = 0
+        os.percent = 0
+      })
+      
+      // 然后根据操作系统名称进行匹配赋值
+      deviceStats.osTypes.forEach(item => {
+        const osIndex = osData.value.findIndex(os => os.name === item.name)
+        if (osIndex !== -1) {
+          // 如果找到匹配的操作系统，直接更新
+          osData.value[osIndex].value = item.value
+          osData.value[osIndex].percent = item.percent
+        } else {
+          // 如果没有找到匹配的操作系统，将其添加到其他类别
+          osData.value[osData.value.length - 1].value += item.value
+          osData.value[osData.value.length - 1].percent += item.percent
         }
       })
     }
 
     // 更新浏览器数据
     if (deviceStats.browserTypes && deviceStats.browserTypes.length > 0) {
-      deviceStats.browserTypes.forEach((item, index) => {
-        if (index < browserData.value.length) {
-          browserData.value[index].value = item.value
-          browserData.value[index].percent = item.percent
+      // 首先将所有浏览器的数值重置为0
+      browserData.value.forEach(browser => {
+        browser.value = 0
+        browser.percent = 0
+      })
+      
+      // 然后根据浏览器名称进行匹配赋值
+      deviceStats.browserTypes.forEach(item => {
+        const browserIndex = browserData.value.findIndex(browser => browser.name === item.name)
+        if (browserIndex !== -1) {
+          // 如果找到匹配的浏览器，直接更新
+          browserData.value[browserIndex].value = item.value
+          browserData.value[browserIndex].percent = item.percent
+        } else {
+          // 如果没有找到匹配的浏览器，将其添加到其他类别
+          browserData.value[browserData.value.length - 1].value += item.value
+          browserData.value[browserData.value.length - 1].percent += item.percent
         }
       })
     }
 
     // 更新屏幕分辨率数据
     if (deviceStats.resolutions && deviceStats.resolutions.length > 0) {
-      const resolutions = deviceStats.resolutions.slice(0, 7)
-      resolutions.forEach((item, index) => {
-        if (index < resolutionData.value.length - 1) {
-          resolutionData.value[index].value = item.value
+      // 首先将所有分辨率的数值重置为0
+      resolutionData.value.forEach(res => {
+        res.value = 0
+      })
+      
+      // 然后根据分辨率名称进行匹配赋值
+      deviceStats.resolutions.forEach(item => {
+        const resIndex = resolutionData.value.findIndex(res => res.name === item.name)
+        if (resIndex !== -1) {
+          // 如果找到匹配的分辨率，直接更新
+          resolutionData.value[resIndex].value = item.value
+        } else {
+          // 如果没有找到匹配的分辨率，将其添加到其他类别
+          resolutionData.value[resolutionData.value.length - 1].value += item.value
         }
       })
-      // 其他分辨率
-      const otherResolutions = deviceStats.resolutions.slice(7)
-      resolutionData.value[7].value = otherResolutions.reduce((sum, item) => sum + item.value, 0)
     }
   } catch (error) {
     logger.error('[DeviceAnalysis] 加载数据失败:', error)

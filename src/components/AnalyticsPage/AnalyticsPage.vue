@@ -186,17 +186,7 @@
           </div>
         </div>
 
-        <!-- 地理位置详细分析 -->
-        <div class="dashboard-row">
-          <div class="dashboard-card geo-card">
-            <div class="card-header">
-              <h2 class="card-title">地理位置分析</h2>
-            </div>
-            <div class="card-content">
-              <GeoAnalysis :time-range="selectedTimeRange" />
-            </div>
-          </div>
-        </div>
+    
       </div>
     </main>
 
@@ -221,7 +211,6 @@ import TrendChart from './TrendChart.vue'
 import DeviceAnalysis from './DeviceAnalysis.vue'
 import PageRanking from './PageRanking.vue'
 import UserBehavior from './UserBehavior.vue'
-import GeoAnalysis from './GeoAnalysis.vue'
 import SQLiteAnalyticsService from '../../services/SQLiteAnalyticsService.js'
 import { logger } from '../../utils/logger'
 

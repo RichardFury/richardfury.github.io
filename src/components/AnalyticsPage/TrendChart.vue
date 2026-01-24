@@ -197,8 +197,24 @@ const updateChart = () => {
   const isDuration = activeTab.value === 'duration'
   const isBounce = activeTab.value === 'bounce'
 
+  // 确保数据存在且格式正确
   if (!data || !data.labels || !data.values) {
     logger.warn('数据格式不正确:', data)
+    // 设置默认数据
+    const defaultData = {
+      labels: ['默认'],
+      values: [0]
+    }
+    chart.value.setOption({
+      xAxis: {
+        data: defaultData.labels
+      },
+      series: [
+        {
+          data: defaultData.values
+        }
+      ]
+    }, true)
     return
   }
 
@@ -207,7 +223,11 @@ const updateChart = () => {
   let sampledLabels = data.labels
   let sampledValues = data.values
 
-  if (data.labels.length > maxDataPoints) {
+  // 如果没有数据，提供默认值
+  if (data.labels.length === 0) {
+    sampledLabels = ['默认']
+    sampledValues = [0]
+  } else if (data.labels.length > maxDataPoints) {
     const step = Math.ceil(data.labels.length / maxDataPoints)
     sampledLabels = data.labels.filter((_, index) => index % step === 0)
     sampledValues = data.values.filter((_, index) => index % step === 0)

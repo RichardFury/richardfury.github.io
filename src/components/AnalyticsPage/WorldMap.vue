@@ -110,8 +110,12 @@
       <!-- 统计信息 -->
       <div class="legend-stats">
         <div class="stat-item">
-          <span class="stat-label">{{ mapView === 'scatter' ? '总访问点' : '总访问量' }}</span>
-          <span class="stat-value">{{ mapView === 'scatter' ? totalVisits.toLocaleString() : totalAnalyticsVisits.toLocaleString() }}</span>
+          <span class="stat-label">总访问量</span>
+          <span class="stat-value">{{ totalAnalyticsVisits.toLocaleString() }}</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">地理访问点</span>
+          <span class="stat-value">{{ totalVisits.toLocaleString() }}</span>
         </div>
         <div class="stat-item">
           <span class="stat-label">覆盖地区</span>
@@ -128,7 +132,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet.markercluster'
@@ -137,6 +141,14 @@ import 'leaflet.markercluster/dist/MarkerCluster.Default.css'
 import 'leaflet.heat'
 import SQLiteAnalyticsService from '../../services/SQLiteAnalyticsService.js'
 import { logger } from '../../utils/logger'
+
+// Props
+const props = defineProps({
+  timeRange: {
+    type: String,
+    default: 'today'
+  }
+})
 
 // Refs
 const mapContainer = ref(null)
@@ -245,6 +257,133 @@ const totalHeatmapVisits = ref(0)
 const uniqueCountries = ref(0)
 const totalAnalyticsVisits = ref(0)
 
+// 中国特殊地区硬编码经纬度（解决直辖市、港澳台识别问题）
+// 包含中文和英文城市名，确保能正确匹配
+const specialChinaLocations = {
+  // 直辖市 - 中文
+  '北京': { lat: 39.9042, lng: 116.4074 },
+  '上海': { lat: 31.2304, lng: 121.4737 },
+  '天津': { lat: 39.0842, lng: 117.2009 },
+  '重庆': { lat: 29.4316, lng: 106.9123 },
+  
+  // 直辖市 - 英文
+  'Beijing': { lat: 39.9042, lng: 116.4074 },
+  'Shanghai': { lat: 31.2304, lng: 121.4737 },
+  'Tianjin': { lat: 39.0842, lng: 117.2009 },
+  'Chongqing': { lat: 29.4316, lng: 106.9123 },
+  
+  // 港澳台 - 中文
+  '香港': { lat: 22.3193, lng: 114.1694 },
+  '澳门': { lat: 22.1987, lng: 113.5493 },
+  '台湾': { lat: 23.6978, lng: 120.9605 },
+  '台北': { lat: 25.0330, lng: 121.5654 },
+  '高雄': { lat: 22.6272, lng: 120.3016 },
+  
+  // 港澳台 - 英文
+  'Hong Kong': { lat: 22.3193, lng: 114.1694 },
+  'Macau': { lat: 22.1987, lng: 113.5493 },
+  'Taiwan': { lat: 23.6978, lng: 120.9605 },
+  'Taipei': { lat: 25.0330, lng: 121.5654 },
+  'Kaohsiung': { lat: 22.6272, lng: 120.3016 },
+  
+  // 重要城市 - 中文
+  '深圳': { lat: 22.5431, lng: 114.0579 },
+  '广州': { lat: 23.1291, lng: 113.2644 },
+  '杭州': { lat: 30.2741, lng: 120.1551 },
+  '成都': { lat: 30.5728, lng: 104.0668 },
+  
+  // 重要城市 - 英文
+  'Shenzhen': { lat: 22.5431, lng: 114.0579 },
+  'Guangzhou': { lat: 23.1291, lng: 113.2644 },
+  'Hangzhou': { lat: 30.2741, lng: 120.1551 },
+  'Chengdu': { lat: 30.5728, lng: 104.0668 }
+}
+
+// 地理编码API - 从OpenStreetMap Nominatim获取地理位置（免费，无需API密钥）
+const geocode = async (locationName) => {
+  try {
+    // 优先检查硬编码的中国特殊地区
+    if (specialChinaLocations[locationName]) {
+      logger.debug(`[WorldMap] 使用硬编码位置: ${locationName} -> ${specialChinaLocations[locationName].lat}, ${specialChinaLocations[locationName].lng}`)
+      return specialChinaLocations[locationName]
+    }
+    
+    const encodedName = encodeURIComponent(locationName)
+    const response = await fetch(
+      `https://nominatim.openstreetmap.org/search?q=${encodedName}&format=json&limit=1&accept-language=zh-CN`
+    )
+    
+    // 检查响应状态
+    if (!response.ok) {
+      logger.warn(`[WorldMap] 地理编码API响应失败: ${response.status}, ${locationName}`)
+      return null
+    }
+    
+    const data = await response.json()
+    
+    if (data && data.length > 0) {
+      const result = data[0]
+      const lat = parseFloat(result.lat)
+      const lng = parseFloat(result.lon)
+      logger.debug(`[WorldMap] 地理编码成功: ${locationName} -> ${lat}, ${lng}`)
+      return { lat, lng }
+    }
+    
+    logger.warn(`[WorldMap] 地理编码失败: ${locationName}`)
+    return null
+  } catch (error) {
+    logger.error(`[WorldMap] 地理编码API调用失败: ${locationName}`, error)
+    return null
+  }
+}
+
+// 批量地理编码 - 避免重复请求
+const batchGeocode = async (locationNames) => {
+  // 使用Map缓存已查询的位置，避免重复请求
+  const locationCache = new Map()
+  const geocodedLocations = []
+  
+  // 先处理有经纬度的位置
+  const locationsWithCoords = locationNames.filter(loc => loc.latitude && loc.longitude)
+  locationsWithCoords.forEach(loc => {
+    locationCache.set(loc.name, { lat: loc.latitude, lng: loc.longitude })
+    geocodedLocations.push({
+      name: loc.name,
+      value: loc.visits,
+      lat: loc.latitude,
+      lng: loc.longitude
+    })
+  })
+  
+  // 处理需要地理编码的位置
+  const locationsWithoutCoords = locationNames.filter(loc => !loc.latitude || !loc.longitude)
+  
+  for (const loc of locationsWithoutCoords) {
+    if (!locationCache.has(loc.name)) {
+      // 尝试从API获取位置
+      const coords = await geocode(loc.name)
+      if (coords) {
+        locationCache.set(loc.name, coords)
+        geocodedLocations.push({
+          name: loc.name,
+          value: loc.visits,
+          ...coords
+        })
+      }
+    } else {
+      // 使用缓存的位置
+      const coords = locationCache.get(loc.name)
+      geocodedLocations.push({
+        name: loc.name,
+        value: loc.visits,
+        ...coords
+      })
+    }
+  }
+  
+  return geocodedLocations
+}
+
 // 加载地理数据
 const loadGeoData = async () => {
   try {
@@ -254,79 +393,92 @@ const loadGeoData = async () => {
     // 使用AnalyticsPage一致的总访问量
     totalAnalyticsVisits.value = summary.total.visits
 
-    // 将地理数据转换为地图坐标点
-    const locationPoints = []
+    // 合并所有需要地理编码的位置
+    const allLocations = []
     
-    // 使用城市数据
+    // 添加城市数据
     if (geoStats.cities && geoStats.cities.length > 0) {
       geoStats.cities.forEach(city => {
-        if (city.latitude && city.longitude) {
-          locationPoints.push({
-            lat: city.latitude,
-            lng: city.longitude,
-            name: city.name,
-            value: city.visits
-          })
-        }
+        allLocations.push({
+          name: city.name,
+          visits: city.visits,
+          latitude: city.latitude,
+          longitude: city.longitude
+        })
       })
     }
     
-    // 如果城市数据不足，使用国家数据
-    if (locationPoints.length < 5 && geoStats.countries && geoStats.countries.length > 0) {
+    // 添加国家数据
+    if (geoStats.countries && geoStats.countries.length > 0) {
       geoStats.countries.forEach(country => {
-        if (country.latitude && country.longitude) {
-          locationPoints.push({
-            lat: country.latitude,
-            lng: country.longitude,
-            name: country.name,
-            value: country.visits
-          })
-        }
+        allLocations.push({
+          name: country.name,
+          visits: country.visits,
+          latitude: country.latitude,
+          longitude: country.longitude
+        })
       })
     }
     
-    locations.value = locationPoints
+    // 去重 - 避免同一位置重复处理
+    // 使用Map缓存已处理的位置，根据经纬度和名称双重去重
+    const locationCache = new Map()
+    const uniqueLocations = []
     
-    // 计算统计数据
-    totalVisits.value = locationPoints.reduce((sum, loc) => sum + loc.value, 0)
-    totalHeatmapVisits.value = totalVisits.value
-    
-    // 计算唯一的国家数量（从cityCoordinates映射中推断国家）
-    const countrySet = new Set()
-    locationPoints.forEach(loc => {
-      // 从cityCoordinates中查找城市对应的国家
-      for (const [city, coords] of Object.entries(cityCoordinates)) {
-        if (loc.name === city) {
-          // 从countryCoordinates中查找这个坐标对应的国家
-          for (const [country, countryCoords] of Object.entries(countryCoordinates)) {
-            if (Math.abs(coords.lat - countryCoords.lat) < 0.1 && 
-                Math.abs(coords.lng - countryCoords.lng) < 0.1) {
-              countrySet.add(country)
-            }
-          }
-          break
+    // 先处理有经纬度的位置
+    allLocations.forEach(loc => {
+      if (loc.latitude && loc.longitude) {
+        // 使用经纬度作为唯一标识，保留4位小数以避免精度问题
+        const latKey = parseFloat(loc.latitude).toFixed(4)
+        const lngKey = parseFloat(loc.longitude).toFixed(4)
+        const locationKey = `${latKey},${lngKey}`
+        
+        if (!locationCache.has(locationKey)) {
+          locationCache.set(locationKey, loc)
+          uniqueLocations.push(loc)
         }
       }
     })
     
-    uniqueCountries.value = countrySet.size
+    // 处理没有经纬度的位置，使用名称去重
+    const seenNames = new Set(uniqueLocations.map(loc => loc.name))
+    allLocations.forEach(loc => {
+      if (!loc.latitude || !loc.longitude) {
+        if (!seenNames.has(loc.name)) {
+          seenNames.add(loc.name)
+          uniqueLocations.push(loc)
+        }
+      }
+    })
     
-    logger.debug('[WorldMap] 加载地理数据成功:', locationPoints.length, '个点，总访问量:', totalVisits.value, '覆盖地区:', uniqueCountries.value)
+    // 批量地理编码
+    const locationPoints = await batchGeocode(uniqueLocations)
+    
+    locations.value = locationPoints
+    
+    // 计算地理访问量总和
+    totalVisits.value = locationPoints.reduce((sum, loc) => sum + loc.value, 0)
+    totalHeatmapVisits.value = totalVisits.value
+    
+    // 直接使用geoStats.countries的长度作为唯一国家数量
+    uniqueCountries.value = geoStats.countries ? geoStats.countries.length : 0
+    
+    logger.debug('[WorldMap] 加载地理数据成功:', locationPoints.length, '个点，地理访问量:', totalVisits.value, '总访问量:', totalAnalyticsVisits.value, '覆盖地区:', uniqueCountries.value)
+    
+    // 数据加载完成后，更新图层
+    if (isMapReady.value) {
+      initScatterLayer()
+      initHeatmapLayer()
+      switchView(mapView.value)
+    }
   } catch (error) {
     logger.error('[WorldMap] 加载地理数据失败:', error)
-    alert(`加载地理数据失败：${error.message || '未知错误'}`)
-    // 使用默认数据
-    locations.value = [
-      { lat: 39.9042, lng: 116.4074, name: '北京', value: 1 },
-      { lat: 31.2304, lng: 121.4737, name: '上海', value: 1 },
-      { lat: 40.7128, lng: -74.0060, name: '纽约', value: 1 },
-      { lat: 51.5074, lng: -0.1278, name: '伦敦', value: 1 },
-      { lat: 35.6762, lng: 139.6503, name: '东京', value: 1 }
-    ]
-    totalVisits.value = 5
-    totalHeatmapVisits.value = 5
-    uniqueCountries.value = 5
-    totalAnalyticsVisits.value = 5
+    // 使用默认数据 - 改为空数据
+    locations.value = []
+    totalVisits.value = 0
+    totalHeatmapVisits.value = 0
+    uniqueCountries.value = 0
+    totalAnalyticsVisits.value = 0
   }
 }
 
@@ -578,6 +730,21 @@ const retryInit = () => {
   logger.debug('[WorldMap] 重试初始化')
   initMap()
 }
+
+// 监听timeRange变化
+watch(() => props.timeRange, async (newRange) => {
+  logger.debug('[WorldMap] timeRange变化:', newRange)
+  await loadGeoData()
+  // 重新初始化地图或更新图层
+  if (isMapReady.value) {
+    // 重新初始化散点图层
+    initScatterLayer()
+    // 重新初始化热力图层
+    initHeatmapLayer()
+    // 切换到当前视图
+    switchView(mapView.value)
+  }
+})
 
 // 生命周期
 onMounted(async () => {

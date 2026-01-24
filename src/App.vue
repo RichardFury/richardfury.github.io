@@ -123,20 +123,67 @@ function collectGeoInfo() {
   const language = navigator.language || 'en'
   const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC'
   
+  // 国家到坐标的映射
+  const countryToCoordinates = {
+    '中国': { lat: 35.8617, lng: 104.1954 },
+    '日本': { lat: 36.2048, lng: 138.2529 },
+    '韩国': { lat: 35.9078, lng: 127.7669 },
+    '新加坡': { lat: 1.3521, lng: 103.8198 },
+    '印度': { lat: 20.5937, lng: 78.9629 },
+    '阿联酋': { lat: 23.4241, lng: 53.8478 },
+    '英国': { lat: 55.3781, lng: -3.4360 },
+    '法国': { lat: 46.2276, lng: 2.2137 },
+    '德国': { lat: 51.1657, lng: 10.4515 },
+    '意大利': { lat: 41.8719, lng: 12.5674 },
+    '西班牙': { lat: 40.4637, lng: -3.7492 },
+    '荷兰': { lat: 52.1326, lng: 5.2913 },
+    '比利时': { lat: 50.5039, lng: 4.4699 },
+    '奥地利': { lat: 47.5162, lng: 14.5501 },
+    '瑞士': { lat: 46.8182, lng: 8.2275 },
+    '瑞典': { lat: 60.1282, lng: 18.6435 },
+    '挪威': { lat: 60.4720, lng: 8.4689 },
+    '丹麦': { lat: 56.2639, lng: 9.5018 },
+    '芬兰': { lat: 61.9241, lng: 25.7482 },
+    '波兰': { lat: 51.9194, lng: 19.1451 },
+    '捷克': { lat: 49.8175, lng: 15.4730 },
+    '匈牙利': { lat: 47.1625, lng: 19.5033 },
+    '希腊': { lat: 39.0742, lng: 21.8243 },
+    '俄罗斯': { lat: 61.5240, lng: 105.3188 },
+    '土耳其': { lat: 38.9637, lng: 35.2433 },
+    '美国': { lat: 37.0902, lng: -95.7129 },
+    '加拿大': { lat: 56.1304, lng: -106.3468 },
+    '巴西': { lat: -14.2350, lng: -51.9253 },
+    '阿根廷': { lat: -38.4161, lng: -63.6167 },
+    '墨西哥': { lat: 23.6345, lng: -102.5528 },
+    '秘鲁': { lat: -9.1899, lng: -75.0152 },
+    '哥伦比亚': { lat: 4.5709, lng: -74.2973 },
+    '澳大利亚': { lat: -25.2744, lng: 133.7751 },
+    '新西兰': { lat: -40.9006, lng: 174.8860 },
+    '埃及': { lat: 26.8206, lng: 30.8025 },
+    '南非': { lat: -30.5595, lng: 22.9375 },
+    '尼日利亚': { lat: 9.0820, lng: 8.6753 },
+    'Unknown': { lat: 0, lng: 0 }
+  }
+  
   // 使用IP地址获取地理位置
   fetch('https://ipapi.co/json/')
     .then(response => response.json())
     .then(data => {
       const country = data.country_name || 'Unknown'
       const city = data.city || 'Unknown'
+      const coordinates = countryToCoordinates[country] || { lat: 0, lng: 0 }
       
-      logger.debug('[App.vue] 通过IP获取地理位置:', { country, city, ip: data.ip })
+      logger.debug('[App.vue] 通过IP获取地理位置:', { country, city, ip: data.ip, coordinates })
 
       SQLiteAnalyticsService.addGeo({
         country,
+        countryCode: data.country_code || 'XX',
         city,
+        latitude: data.latitude || coordinates.lat,
+        longitude: data.longitude || coordinates.lng,
         language: language.split('-')[0],
-        timezone
+        timezone,
+        ipAddress: data.ip || 'Unknown'
       })
     })
     .catch(error => {
@@ -195,6 +242,7 @@ function collectGeoInfo() {
       }
       
       const inferredCountry = timezoneToCountry[timezone] || 'Unknown'
+      const coordinates = countryToCoordinates[inferredCountry] || { lat: 0, lng: 0 }
       
       const countryToCity = {
         '中国': '北京',
@@ -238,13 +286,17 @@ function collectGeoInfo() {
       
       const inferredCity = countryToCity[inferredCountry] || 'Unknown'
       
-      logger.debug('[App.vue] 使用时区推断地理位置:', { country: inferredCountry, city: inferredCity })
+      logger.debug('[App.vue] 使用时区推断地理位置:', { country: inferredCountry, city: inferredCity, coordinates })
 
       SQLiteAnalyticsService.addGeo({
         country: inferredCountry,
+        countryCode: 'XX',
         city: inferredCity,
+        latitude: coordinates.lat,
+        longitude: coordinates.lng,
         language: language.split('-')[0],
-        timezone
+        timezone,
+        ipAddress: 'Unknown'
       })
     })
 }

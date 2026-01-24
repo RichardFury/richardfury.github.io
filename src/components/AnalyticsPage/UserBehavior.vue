@@ -460,7 +460,7 @@ const initScrollChart = () => {
     series: [
       {
         type: 'bar',
-        data: [15, 25, 35, 25],
+        data: [0, 0, 0, 0],
         itemStyle: {
           borderRadius: [4, 4, 0, 0],
           color: {

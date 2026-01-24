@@ -170,14 +170,16 @@ const loadPageRanking = async () => {
     // 计算趋势（基于历史数据对比）
     const previousRanking = await SQLiteAnalyticsService.getPreviousPageRanking()
     ranking.forEach((item, index) => {
-      const previousItem = previousRanking.find(p => p.path === item.path)
-      const previousVisits = previousItem ? previousItem.visits : 0
-      const currentVisits = item.visits
-      const trend = currentVisits - previousVisits
-      const trendPercent = previousVisits > 0 ? ((trend / previousVisits) * 100).toFixed(1) : 0
+      if (index < pageRanking.value.length) {
+        const previousItem = previousRanking.find(p => p.path === item.path)
+        const previousVisits = previousItem ? previousItem.visits : 0
+        const currentVisits = item.visits
+        const trend = currentVisits - previousVisits
+        const trendPercent = previousVisits > 0 ? ((trend / previousVisits) * 100).toFixed(1) : 0
 
-      pageRanking.value[index].trend = `${trendPercent > 0 ? '+' : ''}${trendPercent}%`
-      pageRanking.value[index].trendClass = trendPercent > 0 ? 'trend-up' : 'trend-down'
+        pageRanking.value[index].trend = `${trendPercent > 0 ? '+' : ''}${trendPercent}%`
+        pageRanking.value[index].trendClass = trendPercent > 0 ? 'trend-up' : 'trend-down'
+      }
     })
   } catch (error) {
     logger.error('[PageRanking] 加载数据失败:', error)
